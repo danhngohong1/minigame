@@ -134,6 +134,7 @@
   .big{container-type:inline-size;position:relative;width:min(88vw,380px,calc((100dvh - 220px) * 2 / 3));aspect-ratio:2/3;perspective:1600px;animation:rise .55s cubic-bezier(.2,1.3,.4,1)}
   .flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.3,1.25,.45,1)}
   .big.flipped .flip{transform:rotateY(180deg)}
+  .big.instant .flip{transition:none}
   .face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden}
   .front{transform:rotateY(180deg)}
   .big.loading .ring::before{animation-duration:.9s}
@@ -408,20 +409,35 @@
     stage.hidden = false;
   }
 
+  // Gửi về Google Sheets. Trả về "success" | "duplicate" | "error".
+  // Ưu tiên đọc phản hồi của Apps Script (để biết số điện thoại đã tham gia chưa);
+  // nếu trình duyệt không đọc được phản hồi thì gửi lại dạng no-cors (Apps Script đã chống trùng theo SĐT).
   async function postToSheet(payload) {
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 15000);
+    const opts = { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload), signal: ctl.signal };
     try {
-      await fetch(WEBHOOK, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload),
-        signal: ctl.signal
-      });
+      try {
+        const res = await fetch(WEBHOOK, opts);
+        const data = await res.json().catch(() => null);
+        return data && data.result ? data.result : "success";
+      } catch (err) {
+        if (err.name === "AbortError") throw err;
+        await fetch(WEBHOOK, { ...opts, mode: "no-cors" });
+        return "success";
+      }
     } finally {
       clearTimeout(timer);
     }
+  }
+
+  function showError(msg, mode, label) {
+    big.classList.remove("loading");
+    status.className = "status error";
+    status.textContent = msg;
+    retry.dataset.mode = mode;
+    retry.textContent = label;
+    retry.hidden = false;
   }
 
   async function send() {
@@ -430,16 +446,62 @@
     status.innerHTML = '<span class="dots">Đang kết nối tần số vũ trụ</span>';
     big.classList.add("loading");
     try {
-      await Promise.all([postToSheet(state.payload), sleep(1800)]);
+      const [result] = await Promise.all([postToSheet(state.payload), sleep(1800)]);
+      if (result === "duplicate") {
+        showError(`Số ${state.payload.phone} đã tham gia rồi. Mỗi người chỉ được chơi 1 lần nhé!`, "edit", "Nhập số khác");
+        return;
+      }
+      if (result === "error") throw new Error("server");
+      savePlayed();
       reveal();
     } catch (err) {
-      big.classList.remove("loading");
-      status.className = "status error";
-      status.textContent = "Tín hiệu vũ trụ đang chập chờn. Kiểm tra kết nối mạng rồi bấm Thử lại nhé.";
-      retry.hidden = false;
+      showError("Tín hiệu vũ trụ đang chập chờn. Kiểm tra kết nối mạng rồi bấm Thử lại nhé.", "send", "Thử lại");
     }
   }
-  retry.addEventListener("click", send);
+  retry.addEventListener("click", () => {
+    if (retry.dataset.mode === "edit") {
+      stage.hidden = true;
+      retry.hidden = true;
+      phoneInput.value = "";
+      openModal();
+      setTimeout(() => phoneInput.focus(), 60);
+    } else send();
+  });
+
+  // ---------- Mỗi người chỉ chơi 1 lần (khóa trên máy) ----------
+  const PLAYED_KEY = "fpt-vu-tru-played-v1";
+  function savePlayed() {
+    try {
+      localStorage.setItem(PLAYED_KEY, JSON.stringify({
+        n: state.n, id: state.card.id, name: state.payload.name, phone: state.payload.phone, at: Date.now()
+      }));
+    } catch (e) {}
+  }
+  function loadPlayed() {
+    try {
+      const d = JSON.parse(localStorage.getItem(PLAYED_KEY) || "null");
+      const card = d && [...GIFTS, ...MESSAGES].find((c) => c.id === d.id);
+      return card ? { d, card } : null;
+    } catch (e) { return null; }
+  }
+  function showPlayed({ d, card }) {
+    const special = card.id.startsWith("G");
+    state.busy = true;
+    state.n = d.n || 1;
+    state.card = { ...card, special, reward: special ? card.gift : `Lời chúc: ${card.name} (${card.stars} Sao)` };
+    state.payload = { name: d.name, phone: d.phone, reward: state.card.reward, address: "" };
+    $("#bigBack").innerHTML = backHTML(state.n);
+    renderFront();
+    $("#front .f-saved").textContent = `✓ Đã lưu thông tin của ${d.name}`;
+    big.classList.remove("loading");
+    big.classList.add("instant", "flipped");
+    big.style.animation = "none";
+    status.className = "status";
+    status.textContent = "Bạn đã nhận thông điệp vũ trụ rồi. Mỗi người chỉ được chơi 1 lần, đây là lá bài của bạn!";
+    $("#hint").hidden = false;
+    $("#dl").hidden = false;
+    stage.hidden = false;
+  }
 
   function renderFront() {
     const c = state.card;
@@ -685,6 +747,10 @@
       else cx.clearRect(0, 0, w, h);
     })(start);
   }
+
+  // Đã chơi trên máy này → mở thẳng lá bài cũ, không cho chơi lại
+  const played = loadPlayed();
+  if (played) showPlayed(played);
 })();
 </script>
 </body>

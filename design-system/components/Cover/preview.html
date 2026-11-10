@@ -1,0 +1,30 @@
+<!-- @dsCard height=288 -->
+<style>
+  .cv{position:relative;width:960px;height:288px;background:var(--surface);overflow:hidden}
+  .cv svg{position:absolute;left:480px;top:0}
+  .cv .ink{fill:var(--ink)} .cv .alt{fill:var(--surface-alt)} .cv .acc{fill:var(--accent)} .cv .lnk{fill:none;stroke:var(--link);stroke-width:1.5}
+  .cv .pill-acc{fill:var(--accent)} .cv .pill-surf{fill:var(--surface)}
+  .cv__text{position:absolute;left:40px;bottom:40px;max-width:440px}
+  .cv__name{margin:0;font-family:var(--font-display);font-weight:600;font-size:120px;line-height:.92;letter-spacing:-2px;color:var(--ink)}
+  .cv__tag{margin:12px 0 0;font-family:var(--font-text);font-size:14px;line-height:18px;color:var(--ink-secondary)}
+</style>
+<div class="cv">
+  <svg width="480" height="288" viewBox="0 0 480 288" aria-hidden="true">
+    <!-- blocks: ink 228x288 slab, surface-alt 240x168, accent 240x108 (tile gap space-3 = 12px)
+         arrangement: one tall slab left with two stacked tiles right, bleeding top, bottom and right like the full-bleed promo grid
+         pattern: pills (radius-pill) — the system's only shape is the full-pill button; buttons are pills, so pills it is
+         steps/radii: space-3 12px gaps, pills 36px tall (8px pad + 18px line + 8px + borders) rx 18 = half the short side -->
+    <rect class="ink" x="0" y="0" width="228" height="288"/>
+    <rect class="alt" x="240" y="0" width="240" height="168"/>
+    <rect class="acc" x="240" y="180" width="240" height="108"/>
+    <rect class="pill-acc" x="24" y="196" width="112" height="36" rx="18"/>
+    <rect class="lnk" x="24.75" y="240.75" width="70.5" height="34.5" rx="17.25" style="stroke:var(--surface)"/>
+    <rect class="pill-acc" x="276" y="60" width="112" height="36" rx="18"/>
+    <rect class="lnk" x="276.75" y="108.75" width="70.5" height="34.5" rx="17.25"/>
+    <rect class="pill-surf" x="276" y="216" width="160" height="36" rx="18"/>
+  </svg>
+  <div class="cv__text">
+    <h1 class="cv__name">Lumen</h1>
+    <p class="cv__tag">Big type, lots of air, one blue for actions.</p>
+  </div>
+</div>

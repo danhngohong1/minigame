@@ -1,0 +1,11 @@
+<!-- @dsCard group="Navigation" height=140 subtitle="Translucent 44px bar over content" -->
+<div style="position:relative;height:120px;overflow:hidden;background:var(--surface-alt)">
+  <div aria-hidden="true" style="position:absolute;inset:20px 0 0;display:flex;justify-content:center;gap:12px"><div style="width:30%;background:var(--accent)"></div><div style="width:30%;background:var(--ink)"></div></div>
+  <nav class="lm-nav" aria-label="Global" style="position:relative">
+    <div class="lm-nav__inner">
+      <a class="lm-nav__brand" href="#">Lumen</a>
+      <a href="#">Store</a><a href="#">Mac</a><a href="#">Phone</a><a href="#">Watch</a><a href="#">Audio</a><a href="#">Support</a>
+    </div>
+  </nav>
+</div>
+<script>document.querySelectorAll('a[href="#"]').forEach(a=>a.addEventListener('click',e=>e.preventDefault()))</script>

@@ -1,0 +1,8 @@
+<!-- @dsCard group="Actions" height=120 subtitle="Primary, secondary, large, disabled" -->
+<div style="display:flex;flex-wrap:wrap;gap:17px;align-items:center;padding:24px;background:var(--surface)">
+  <a class="lm-btn" href="#">Learn more</a>
+  <a class="lm-btn lm-btn--secondary" href="#">Buy</a>
+  <a class="lm-btn lm-btn--lg" href="#">Shop gifts</a>
+  <button class="lm-btn" disabled>Sold out</button>
+</div>
+<script>document.querySelectorAll('a[href="#"]').forEach(a=>a.addEventListener('click',e=>e.preventDefault()))</script>

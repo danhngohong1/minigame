@@ -136,7 +136,7 @@
   /* ---------- Sân khấu lật bài ---------- */
   .stage{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
     padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:rgba(5,4,15,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fade .3s ease}
-  .big{container-type:inline-size;position:relative;width:min(86vw,360px,calc((100dvh - 330px) * var(--book-ratio)));aspect-ratio:var(--book-ratio);perspective:1800px;animation:rise .55s cubic-bezier(.2,1.3,.4,1)}
+  .big{container-type:inline-size;position:relative;width:min(86vw,370px,calc((100dvh - 270px) * var(--book-ratio)));aspect-ratio:var(--book-ratio);perspective:1800px;animation:rise .55s cubic-bezier(.2,1.3,.4,1)}
   /* Trang đích (nằm dưới cùng) + chồng trang lật đè lên trên.
      Không dùng backface-visibility (iOS Safari xử lý sai) — tờ lật tự mờ đi khi qua 90°. */
   .page,.leaf.blank{background:
@@ -170,17 +170,17 @@
     font:italic 600 5.6cqw/1.42 var(--serif);color:#1E1646;text-wrap:balance}
   .pg-div{display:flex;align-items:center;gap:2cqw;margin:1cqw 0 0;color:#e07a2c;font-size:3.6cqw}
   .pg-div::before,.pg-div::after{content:"";width:14cqw;height:1px;background:#e2a36a}
-  .pg-room{flex:0 0 44cqw}
+  .pg-room{flex:0 0 40cqw}
   .pg-ill{position:absolute;z-index:1;left:0;right:0;bottom:0;width:100%;height:54cqw;object-fit:cover;object-position:50% 12%;
     -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22%);mask-image:linear-gradient(180deg,transparent 0,#000 22%)}
 
-  /* Kết quả quà/tem — đặt ngay dưới cuốn sách */
-  .result{display:flex;align-items:center;gap:12px;width:min(86vw,360px,max(290px,calc((100dvh - 330px) * var(--book-ratio))));padding:10px 16px;border-radius:16px;text-align:left;animation:fade .4s ease}
-  .result .ico{font-size:28px;line-height:1}
-  .result .r1{display:block;font-size:13px;font-weight:600;opacity:.92}
-  .result .r2{display:block;margin-top:2px;font-size:16px;font-weight:800;line-height:1.25}
-  .result.special{background:linear-gradient(135deg,var(--orange),var(--orange-deep));color:#fff;box-shadow:0 8px 24px rgba(243,112,33,.45)}
-  .result.msg{background:#F1FAEF;border:2px dashed var(--green);color:#1d5e2b}
+  /* Kết quả quà/tem — nằm trong trang sách, ngay dưới thông điệp */
+  .pg-res{position:relative;z-index:2;margin-top:2cqw;padding:2cqw 5cqw 2.2cqw;border-radius:3.2cqw;font-family:var(--font);line-height:1.2;text-align:center;max-width:80cqw}
+  .pg-res .r1{display:block;font-size:3.1cqw;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.92}
+  .pg-res .r2{display:block;margin-top:.8cqw;font-size:4.4cqw;font-weight:800}
+  .pg-res.special{background:linear-gradient(135deg,var(--orange),var(--orange-deep));color:#fff;box-shadow:0 1.5cqw 4cqw rgba(200,80,10,.4)}
+  .pg-res.msg{background:linear-gradient(135deg,#2a1f66,#1E1646);color:#fff;box-shadow:0 1.5cqw 4cqw rgba(30,22,70,.35)}
+  .pg-res.msg .r2{color:var(--gold)}
 
   .status{margin:0;min-height:22px;max-width:36ch;font-size:15px;font-weight:700;line-height:1.45;color:var(--orange-light);text-align:center}
   .status.error{color:#ffb4a8}
@@ -266,7 +266,6 @@
     <div class="page" id="front"></div>
     <div id="leaves"></div>
   </div>
-  <div class="result" id="result" hidden></div>
   <p class="status" id="status" aria-live="polite"></p>
   <div class="actions">
     <button type="button" class="btn" id="dl" hidden>⬇ Tải trang sách về máy</button>
@@ -737,7 +736,6 @@
     stage.hidden = false;
     buildLeaves();
     renderFront();
-    $("#result").hidden = true;
     big.classList.remove("open", "instant");
     big.classList.add("loading");
   }
@@ -825,7 +823,6 @@
     stage.hidden = false;
     $("#leaves").innerHTML = "";
     renderFront();
-    renderResult();
     big.classList.remove("loading");
     big.classList.add("instant", "open");
     big.style.animation = "none";
@@ -847,6 +844,9 @@
         <div class="pg-num"><b>${pad3(c.page)}</b></div>
         <div class="pg-stars" aria-label="${c.stars} sao may mắn">${"★".repeat(c.stars)}</div>
         <p class="pg-msg"><span></span></p>
+        <div class="pg-res ${c.special ? "special" : "msg"}">${c.special
+          ? `<span class="r1">Bạn nhận được quà từ FPT</span><span class="r2">01 ${c.gift}</span>`
+          : `<span class="r1">Tem chứng nhận</span><span class="r2">Vía May Mắn Hôm Nay Từ FPT</span>`}</div>
         <div class="pg-div" aria-hidden="true">✦</div>
         <div class="pg-room"></div>
       </div>`;
@@ -868,15 +868,6 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitMsg);
   addEventListener("resize", fitMsg);
 
-  function renderResult() {
-    const c = state.card, r = $("#result");
-    r.className = `result ${c.special ? "special" : "msg"}`;
-    r.innerHTML = c.special
-      ? `<span class="ico">🎁</span><span><span class="r1">Bạn nhận được quà từ FPT:</span><span class="r2">01 ${c.gift}</span></span>`
-      : `<span class="ico">🏅</span><span><span class="r1">Tem chứng nhận</span><span class="r2">Vía May Mắn Hôm Nay Từ FPT</span></span>`;
-    r.hidden = false;
-  }
-
   function reveal() {
     big.classList.remove("loading");
     big.classList.add("open");
@@ -884,7 +875,6 @@
     status.textContent = "Vũ trụ đang lật đến trang của bạn...";
     const done = reduce ? 0 : LEAVES * 170 + 800;
     setTimeout(() => {
-      renderResult();
       status.textContent = state.card.special
         ? `Chúc mừng ${state.payload.name}! Trang ${pad3(state.page)} mang quà FPT đến cho bạn 🎉`
         : `Chúc mừng ${state.payload.name}! Vũ trụ đã gửi thông điệp trang ${pad3(state.page)} đến bạn ✨`;
@@ -938,7 +928,7 @@
     x.globalAlpha = 1;
 
     // Trang sách giấy da (giống trang trên màn hình)
-    const mid = W / 2, pw = 880, ph = Math.round(pw / 0.732), px = mid - pw / 2, py = 46;
+    const mid = W / 2, pw = 960, ph = Math.round(pw / 0.732), px = mid - pw / 2, py = 60;
     const u = pw / 100; // 1 đơn vị = 1cqw trên màn hình
     x.save(); x.shadowColor = "rgba(243,112,33,.55)"; x.shadowBlur = 70;
     roundRect(x, px, py, pw, ph, 32); x.fillStyle = "#f6e6c8"; x.fill(); x.restore();
@@ -997,37 +987,39 @@
     x.font = FONT(400, 4 * u); x.fillStyle = "#F37021"; x.fillText("★".repeat(c.stars), mid, y);
 
     // Thông điệp (serif nghiêng), tự thu nhỏ cho vừa khoảng trống phía trên minh hoạ
-    const top = y + 4 * u, divY = py + ph - 44 * u - 3 * u, maxW = 78 * u;
+    const divY = py + ph - 40 * u - 3 * u;
+
+    // Ô quà / tem chứng nhận trong trang (ngay trên đường kẻ ✦)
+    const r1 = c.special ? "BẠN NHẬN ĐƯỢC QUÀ TỪ FPT" : "TEM CHỨNG NHẬN";
+    const r2 = c.special ? "01 " + c.gift : "Vía May Mắn Hôm Nay Từ FPT";
+    x.font = FONT(800, 4.4 * u); const w2 = x.measureText(r2).width;
+    x.font = FONT(600, 3.1 * u); const w1 = x.measureText(r1).width;
+    const bw = Math.min(80 * u, Math.max(w1, w2) + 10 * u), bh = 14 * u, bx = mid - bw / 2, by = divY - 3 * u - bh;
+    g = x.createLinearGradient(bx, by, bx + bw, by + bh);
+    if (c.special) { g.addColorStop(0, "#F37021"); g.addColorStop(1, "#C8500A"); } else { g.addColorStop(0, "#2a1f66"); g.addColorStop(1, "#1E1646"); }
+    x.save(); x.shadowColor = c.special ? "rgba(200,80,10,.4)" : "rgba(30,22,70,.35)"; x.shadowBlur = 4 * u; x.shadowOffsetY = 1.5 * u;
+    roundRect(x, bx, by, bw, bh, 3.2 * u); x.fillStyle = g; x.fill(); x.restore();
+    x.fillStyle = "rgba(255,255,255,.92)"; x.font = FONT(600, 3.1 * u); x.fillText(r1, mid, by + 4.4 * u);
+    x.fillStyle = c.special ? "#FFFFFF" : "#FFD700"; x.font = FONT(800, 4.4 * u); x.fillText(r2, mid, by + 9.6 * u);
+
+    // Thông điệp (serif nghiêng), tự thu nhỏ cho vừa khoảng trống phía trên ô quà
+    const top = y + 4 * u, bottom = by - 2 * u, maxW = 78 * u;
     let fs = 5.6 * u, lines = [];
-    for (; fs >= 3.6 * u; fs -= .2 * u) { x.font = `italic 600 ${fs}px ${SERIF}`; lines = wrapText(x, c.msg, maxW); if (lines.length * fs * 1.42 <= divY - top - 2 * u) break; }
+    for (; fs >= 3.6 * u; fs -= .2 * u) { x.font = `italic 600 ${fs}px ${SERIF}`; lines = wrapText(x, c.msg, maxW); if (lines.length * fs * 1.42 <= bottom - top) break; }
     x.fillStyle = "#1E1646";
-    let ty = (top + divY) / 2 - (lines.length - 1) * fs * 1.42 / 2;
+    let ty = (top + bottom) / 2 - (lines.length - 1) * fs * 1.42 / 2;
     for (const l of lines) { x.fillText(l, mid, ty); ty += fs * 1.42; }
     x.fillStyle = "#e07a2c"; x.font = FONT(400, 3.6 * u); x.fillText("✦", mid, divY);
     x.strokeStyle = "#e2a36a"; x.lineWidth = 2;
     [[-1, mid - 4 * u], [1, mid + 4 * u]].forEach(([dir, sx]) => { x.beginPath(); x.moveTo(sx, divY); x.lineTo(sx + dir * 14 * u, divY); x.stroke(); });
 
-    // Hộp kết quả dưới trang
-    const L = px, R = px + pw, CW = pw, boxY = py + ph + 34, boxH = 150;
-    if (c.special) {
-      g = x.createLinearGradient(L, boxY, R, boxY + boxH); g.addColorStop(0, "#F37021"); g.addColorStop(1, "#C8500A");
-      roundRect(x, L, boxY, CW, boxH, 36); x.fillStyle = g; x.fill();
-      x.fillStyle = "#FFFFFF"; x.font = FONT(600, 34); x.fillText("🎁 Bạn nhận được quà từ FPT:", mid, boxY + 48);
-      x.font = FONT(800, 52); x.fillText("01 " + c.gift, mid, boxY + 105);
-    } else {
-      roundRect(x, L, boxY, CW, boxH, 36); x.fillStyle = "#F1FAEF"; x.fill();
-      x.setLineDash([18, 12]); x.lineWidth = 5; x.strokeStyle = "#51B848"; x.stroke(); x.setLineDash([]);
-      x.fillStyle = "#1D5E2B"; x.font = FONT(600, 34); x.fillText("🏅 Tem chứng nhận", mid, boxY + 48);
-      x.font = FONT(800, 48); x.fillText("Vía May Mắn Hôm Nay Từ FPT", mid, boxY + 105);
-    }
-
     const d = new Date();
     const date = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-    x.font = FONT(600, 30); x.fillStyle = "rgba(255,255,255,.85)";
+    x.font = FONT(600, 32); x.fillStyle = "rgba(255,255,255,.88)";
     const pg = `Trang ${pad3(c.page)} · `;
     let who = p.name, line = `${pg}Gửi đến: ${who} · ${date}`;
-    while (x.measureText(line).width > CW && who.length > 4) { who = who.slice(0, -2); line = `${pg}Gửi đến: ${who}… · ${date}`; }
-    x.fillText(line, mid, boxY + boxH + 44);
+    while (x.measureText(line).width > pw && who.length > 4) { who = who.slice(0, -2); line = `${pg}Gửi đến: ${who}… · ${date}`; }
+    x.fillText(line, mid, py + ph + 80);
 
     // Chân ảnh
     x.font = FONT(800, 32); x.fillStyle = "#FF8A47";

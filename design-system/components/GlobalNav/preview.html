@@ -1,10 +1,12 @@
-<!-- @dsCard group="Navigation" height=140 subtitle="Translucent 44px bar over content" -->
-<div style="position:relative;height:120px;overflow:hidden;background:var(--surface-alt)">
-  <div aria-hidden="true" style="position:absolute;inset:20px 0 0;display:flex;justify-content:center;gap:12px"><div style="width:30%;background:var(--accent)"></div><div style="width:30%;background:var(--ink)"></div></div>
-  <nav class="lm-nav" aria-label="Global" style="position:relative">
+<!-- @dsCard group="Navigation" height=100 width=1100 subtitle="Thanh điều hướng 64px trong mờ" -->
+<div style="background:var(--surface)">
+  <nav class="lm-nav" aria-label="Chính">
     <div class="lm-nav__inner">
-      <a class="lm-nav__brand" href="#">Lumen</a>
-      <a href="#">Store</a><a href="#">Mac</a><a href="#">Phone</a><a href="#">Watch</a><a href="#">Audio</a><a href="#">Support</a>
+      <a class="lm-nav__brand" href="#">Lumen<span>.</span></a>
+      <div class="lm-nav__links">
+        <a href="#" aria-current="page">Internet</a><a href="#">Truyền hình</a><a href="#">Camera</a><a href="#">Combo</a><a href="#">Hỗ trợ</a>
+      </div>
+      <a class="lm-btn lm-btn--sm" href="#">Đăng ký</a>
     </div>
   </nav>
 </div>

@@ -1,47 +1,48 @@
-Lumen is a quiet, product-first system: big type, lots of air, one blue for actions, and the product picture doing the talking. Its visual language follows the style of apple.com (measured November 2026). It carries no logos or product imagery of its own; supply your own brand mark.
+Lumen là hệ thống thiết kế hiện đại, trẻ trung: nền trắng thoáng, cam FPT `brand` làm điểm nhấn năng động, chữ đậm và góc bo tròn mềm. Tỉ lệ màu gợi ý: khoảng 70% trắng (`surface`), 20% chữ và nền trung tính (`ink`, `surface-muted`), 10% cam (`brand`). Hệ thống không kèm logo; hãy thêm logo chính thức của bạn vào nhóm `assets/Logos/`.
 
-## Content fundamentals
+## Giọng văn
 
-- **Short and declarative.** A headline is a product name or a 2–4 word claim that ends with a period: "Gifts they'll love." "Pro, further." "Endless entertainment."
-- **One idea per tile.** Headline, one subhead line, at most two actions. No paragraphs on a tile.
-- **Verbs on buttons.** "Learn more", "Buy", "Shop gifts". Sentence case, no trailing punctuation, no icons inside primary buttons.
-- **Speak to the reader as "you"**; the brand never says "we" in headlines.
-- **No emoji, no exclamation marks.** Numbers carry claims ("Get up to 3% back"); footnote them in `footnote`.
+- **Ngắn, gần gũi, có năng lượng.** Tiêu đề 3–6 chữ, nói thẳng lợi ích: "Mạng nhanh, sống chất." "Chọn gói hợp với bạn".
+- **Xưng "bạn"** với người đọc; thương hiệu tự xưng "chúng tôi" chỉ trong nội dung dài.
+- **Nút bắt đầu bằng động từ:** "Đăng ký ngay", "Xem chi tiết", "Nhận tư vấn". Viết hoa chữ đầu, không dấu chấm.
+- **Con số cụ thể** thay cho tính từ chung chung: "1Gbps", "Lắp trong 24 giờ", "Từ 180.000đ/tháng".
+- Không dùng emoji trong tiêu đề hay nút; tối đa một dấu chấm than mỗi trang.
 
-## Color
+## Màu sắc
 
-- Ground is `surface`; alternate full-width tiles between `surface`, `surface-alt` and `tile-dark-bg` so each product gets its own band. Never two `surface-alt` tiles touching.
-- Text is `ink` on light grounds, `tile-dark-ink` on `tile-dark-bg`. Supporting text is `ink-secondary`. Keep `ink-tertiary` for disabled and placeholder only: it fails 4.5:1.
-- `accent` is the only hue. It fills the primary button and nothing else. Links use `link` (or `tile-dark-link` on a dark tile).
-- `danger` and `success` always come with words ("In stock", "Enter a valid ZIP code").
+- Nền mặc định là `surface` (trắng). Xen kẽ section bằng `surface-alt` (trắng ấm ánh cam) hoặc `surface-muted`. Tối đa một dải `band-dark-bg` mỗi trang để tạo nhịp.
+- `brand` dành cho hành động chính và khối nhấn lớn: nút chính, icon nổi bật, khối màu trong Hero, card được đề xuất. Mỗi màn hình chỉ một nút `brand`.
+- Chữ màu cam luôn dùng `brand-deep`, không dùng `brand` (cam sáng chỉ đạt 2.9:1 trên trắng).
+- Chữ trắng trên nền `brand` chỉ đạt 2.9:1; nhãn nút trên nền cam luôn từ 16px, đậm 700 (`button`).
+- `brand-soft` làm nền badge và ô icon; chữ trên đó là `brand-deep`.
+- `info` (xanh FPT), `success`, `danger` chỉ báo trạng thái và luôn đi kèm chữ.
 
-## Typography
+## Chữ
 
-- Display faces (`hero-headline`, `section-headline`, `tile-headline`, `intro`, `tile-subhead`) use `--font-display`; anything 19px and below uses `--font-text`. The stacks resolve to the system UI face on Apple devices and Helvetica Neue / Arial elsewhere. No web font ships with the system.
-- Headlines are weight 600; everything else 400. No bold body copy, no italics.
-- Below 734px viewport swap `tile-headline` for `tile-headline-compact` and `tile-subhead` drops to 19px/23px.
-- Center headlines and CTAs on promo tiles; left-align running text and footers.
+- Một họ chữ duy nhất: **Be Vietnam Pro** (Google Fonts, hỗ trợ đầy đủ dấu tiếng Việt), tải ở các độ đậm 400, 500, 600, 700, 800.
+- Tiêu đề đậm (`hero` 800, `section-title` và `card-title` 700) với khoảng cách chữ âm để trông gọn và hiện đại. Nội dung đọc dùng `body` 400.
+- `overline` viết HOA (text-transform: uppercase) màu `brand-deep`, đặt phía trên `section-title`.
+- Dưới 734px: `hero` xuống 40px/44px, `section-title` xuống 32px/38px.
 
-## Layout and spacing
+## Bố cục và khoảng cách
 
-- Promo tiles are full-bleed, `radius-none`, stacked with a `space-3` (12px) gap, two columns on desktop with the same gap.
-- Tile text starts `space-6` (52px) from the tile top; the picture fills the rest.
-- Nav and footer content sit in a `content-max` (980px) column with a `space-5` (22px) gutter.
-- Buttons in a row are `space-4` (17px) apart.
+- Lưới 4px. Cột nội dung tối đa `content-max` (1200px), lề `space-6` trên desktop và `space-4` trên điện thoại.
+- Khoảng cách giữa các section là `space-9` (96px) trên desktop, `space-8` (64px) trên điện thoại. Hãy để nhiều khoảng trắng.
+- Card cách nhau `space-5`, padding trong `space-5`; Hero padding `space-7`.
 
-## Shape, depth, motion
+## Hình khối, chiều sâu, chuyển động
 
-- Every button is a pill: `radius-pill`. Cards use `radius-card`, inputs `radius-input`.
-- Flat by default. Only store cards lift, with `shadow-card` → `shadow-card-hover` and a 1.01 scale over 300ms ease.
-- The global nav is translucent: `nav-bg` with `backdrop-filter: saturate(180%) blur(20px)`.
-- Focus: 2px solid `focus` outline, 2px offset, on every link, button and input.
+- Mọi nút, badge, chip đều bo tròn hoàn toàn: `radius-pill`. Card dùng `radius-lg`, Hero và ảnh lớn dùng `radius-xl`, ô nhập liệu dùng `radius-md`.
+- Card nghỉ ở `shadow-card`; khi hover chuyển sang `shadow-card-hover` và dịch lên 4px trong 200ms ease-out. Nút chính khi hover có `shadow-brand`.
+- Chuyển động nhanh và nảy nhẹ (200–300ms). Tắt chuyển động khi người dùng bật prefers-reduced-motion.
+- Focus: viền 2px liền màu `focus`, cách 2px, trên mọi link, nút và ô nhập.
 
-## Iconography
+## Biểu tượng
 
-- Use the platform's system symbols where available; elsewhere a thin-stroke outline set (1.5px stroke at 24px). Icons take the color of the adjacent text.
-- Links that lead on end with a chevron `›` (U+203A) set in the same text style, never an arrow icon.
-- No logo is included. Set your brand name in `body-tight` weight 600 in the nav until you add a mark under `assets/Logos/`.
+- Dùng bộ icon nét tròn (stroke 2px, đầu nét bo tròn) ở 24px, như Lucide hoặc Phosphor Regular. Icon lấy màu chữ bên cạnh, hoặc `brand-deep` khi đặt trong ô tròn `brand-soft`.
+- Link dẫn sang trang khác kết thúc bằng mũi tên `→` cùng kiểu chữ.
+- Không vẽ lại logo; dùng file logo chính thức.
 
-## Components
+## Component
 
-`Button`, `TextLink`, `PromoTile`, `GlobalNav`, `Footer`. Their classes live in `components/bundle.css` and read only the tokens above.
+`Button`, `TextLink`, `Badge`, `Card`, `Hero`, `GlobalNav`, `Footer`. Class nằm trong `components/bundle.css` và chỉ đọc các token ở trên.

@@ -1,8 +1,7 @@
 # Footer
 
-A `surface-alt` band of small 12px directory columns over a hairline, then the legal row.
+Dải `surface-alt` ấm với các cột liên kết 14px, một đường kẻ mảnh và dòng pháp lý 12px.
 
-- **Provide:** `<footer class="lm-footer">` › `.lm-footer__inner` › `.lm-footer__cols` (columns of `h3` + `ul`) and `.lm-footer__legal`.
-- **Use** `footer-ink` for links and legal text, `ink` weight 600 for column titles, `border` for the single divider.
-- **Do** put footnotes for any claims (prices, percentages) above the columns, in `footnote`.
-- **Don't** use icons, social badges or larger type here.
+- **Cung cấp:** `<footer class="lm-footer">` › `.lm-footer__inner` › `.lm-footer__cols` (mỗi cột một `h3` + `ul`) và `.lm-footer__legal`.
+- Link màu `ink-secondary`, hover sang `brand-deep`; tiêu đề cột `ink` đậm 700.
+- **Không nên** dùng nền cam hoặc nút chính trong footer.

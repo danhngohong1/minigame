@@ -137,6 +137,12 @@
   .big.instant .flip{transition:none}
   .face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden}
   .front{transform:rotateY(180deg)}
+  /* iOS Safari bỏ qua backface-visibility với phần tử con có animation (ring, logo-disc)
+     → ẩn hẳn mặt sau khi đã lật quá nửa, và dừng animation của nó. */
+  .big .back{transition:visibility 0s .5s}
+  .big.flipped .back{visibility:hidden}
+  .big.instant .back{transition:none}
+  .big.flipped .back,.big.flipped .ring::before,.big.flipped .ring::after,.big.flipped .logo-disc{animation:none!important}
   .big.loading .ring::before{animation-duration:.9s}
   .big.loading .back{animation:glow 1s ease-in-out infinite}
   .big.loading .logo-disc{animation:pulse 1s ease-in-out infinite}

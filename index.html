@@ -1,377 +1,1012 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#c9792e">
-<title>Đua Thú Cao Bồi - FPT</title>
-<style>
-  :root{
-    --fpt-orange:#F37021;
-    --fpt-orange-2:#ff8c3a;
-    --fpt-blue:#0a6cff;
-    --fpt-green:#36b37e;
-    --ink:#3a2410;
-    --sand:#e9c892;
-    --sand-d:#d4a85f;
-    --wood:#7a4a24;
-    --wood-d:#5a3418;
-    --sky:#8fd0e8;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
-  html,body{height:100%;}
-  body{
-    background:linear-gradient(180deg,#9ad7ee 0%,#bfe3f2 30%,#e9c892 55%,#d4a85f 100%);
-    color:var(--ink);overflow:hidden;position:relative;
-    display:flex;align-items:center;justify-content:center;
-    min-height:100vh;min-height:100dvh;padding:14px;
-  }
-  /* desert sun + clouds */
-  .bg-deco{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
-  .sun{position:absolute;top:6%;right:12%;width:70px;height:70px;border-radius:50%;
-    background:radial-gradient(circle,#fff3c4,#ffd86b);box-shadow:0 0 50px #ffd86b;}
-  .cloud{position:absolute;color:#fff;opacity:.85;font-size:40px;animation:drift linear infinite;}
-  @keyframes drift{from{transform:translateX(-120px);}to{transform:translateX(120vw);}}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Thông Điệp Vũ Trụ FPT - Chạm Là Đón Lộc</title>
+  <style>
+    :root {
+      --fpt-orange: #F37021;
+      --fpt-blue: #0066B3;
+      --fpt-green: #51B848;
+      --gold: #FFD700;
+      --gold-light: #FFF3B0;
+      --bg-dark: #0B091B;
+      --bg-mid: #1E1646;
+      --bg-light: #2E1F5E;
+    }
 
-  .stage{position:relative;z-index:2;width:100%;max-width:440px;}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-  /* ===== HEADER ===== */
-  .brand{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:12px;}
-  .brand .logo{height:52px;width:auto;display:block;background:#fff;padding:8px 16px;
-    border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.3);}
-  .brand .tag{font-size:17px;font-weight:800;letter-spacing:.5px;color:#fff;
-    text-shadow:0 2px 0 var(--wood-d),0 3px 8px rgba(0,0,0,.35);}
+    body {
+      background: radial-gradient(circle at 50% 15%, var(--bg-light) 0%, var(--bg-mid) 45%, var(--bg-dark) 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
 
-  .card{
-    background:rgba(255,250,240,.92);border:3px solid var(--wood);border-radius:22px;
-    padding:20px 18px;box-shadow:0 16px 40px rgba(90,52,24,.4);animation:pop .4s ease;
-  }
-  @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
-  .hidden{display:none!important;}
+    /* Hạt sao lấp lánh nền */
+    .stars-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: 
+        radial-gradient(1.5px 1.5px at 20px 30px, #fff, transparent),
+        radial-gradient(1px 1px at 90px 80px, var(--gold), transparent),
+        radial-gradient(2px 2px at 160px 120px, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 250px 50px, var(--fpt-orange), transparent),
+        radial-gradient(1px 1px at 310px 210px, #fff, transparent);
+      background-size: 350px 250px;
+      animation: twinkle 8s infinite alternate ease-in-out;
+      opacity: 0.6;
+      z-index: 0;
+    }
 
-  /* ===== FORM ===== */
-  .f-emoji{font-size:48px;text-align:center;margin-bottom:6px;animation:bob 2.2s ease-in-out infinite;}
-  @keyframes bob{50%{transform:translateY(-8px);}}
-  .f-title{font-size:22px;font-weight:800;text-align:center;line-height:1.3;margin-bottom:4px;color:var(--wood-d);}
-  .f-sub{font-size:13.5px;text-align:center;opacity:.85;margin-bottom:18px;line-height:1.5;}
-  .field{margin-bottom:14px;}
-  .field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--wood-d);}
-  .field input{width:100%;padding:14px 15px;border-radius:13px;border:2px solid var(--sand-d);
-    background:#fff;color:var(--ink);font-size:16px;font-weight:600;outline:none;transition:.2s;}
-  .field input:focus{border-color:var(--fpt-orange);box-shadow:0 0 0 4px rgba(243,112,33,.22);}
-  .field input.err{border-color:#e23b3b;box-shadow:0 0 0 4px rgba(226,59,59,.18);}
-  .err-msg{color:#c62828;font-size:12px;margin-top:5px;min-height:14px;display:block;font-weight:600;}
+    @keyframes twinkle {
+      0% { opacity: 0.4; transform: translateY(0px); }
+      100% { opacity: 0.85; transform: translateY(-8px); }
+    }
 
-  .btn{width:100%;border:none;border-radius:15px;padding:16px;font-size:17px;font-weight:800;
-    color:#fff;cursor:pointer;transition:transform .12s,box-shadow .2s;letter-spacing:.4px;
-    background:linear-gradient(135deg,var(--fpt-orange),var(--fpt-orange-2));
-    box-shadow:0 8px 20px rgba(243,112,33,.5),inset 0 -3px 0 rgba(0,0,0,.15);
-    text-shadow:0 1px 2px rgba(0,0,0,.25);}
-  .btn:active{transform:scale(.96);}
-  .btn:disabled{opacity:.55;cursor:not-allowed;filter:grayscale(.3);}
-  .btn.ghost{background:var(--wood);box-shadow:0 6px 16px rgba(90,52,24,.4);}
+    .app-container {
+      width: 100%;
+      max-width: 460px;
+      min-height: 100vh;
+      padding: 18px 16px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
 
-  /* ===== GAME ===== */
-  .greet{text-align:center;font-size:14px;margin-bottom:10px;color:var(--wood-d);font-weight:600;}
-  .greet b{color:var(--fpt-orange);}
-  .pick-title{text-align:center;font-size:14px;font-weight:800;color:var(--wood-d);margin-bottom:10px;}
-  .pick-title span{color:var(--fpt-orange);}
+    /* Header & Logo */
+    .header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-  /* racer picker */
-  .pickers{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;}
-  .pk{position:relative;background:#fff;border:2.5px solid var(--sand-d);border-radius:14px;
-    padding:8px 2px 6px;text-align:center;cursor:pointer;transition:.15s;}
-  .pk .num{position:absolute;top:-8px;left:50%;transform:translateX(-50%);
-    width:22px;height:22px;border-radius:50%;color:#fff;font-size:12px;font-weight:800;
-    display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,.25);}
-  .pk .ani{font-size:30px;line-height:1;display:block;margin-top:6px;}
-  .pk.sel{border-color:var(--fpt-orange);background:#fff3e6;transform:translateY(-3px);
-    box-shadow:0 8px 16px rgba(243,112,33,.35);}
-  .pk.sel::after{content:"✓";position:absolute;bottom:2px;right:5px;color:var(--fpt-green);font-weight:900;font-size:13px;}
+    .fpt-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.35);
+      padding: 6px 16px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+      margin-bottom: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
 
-  /* race track */
-  .track{position:relative;border-radius:16px;overflow:hidden;border:3px solid var(--wood);
-    background:linear-gradient(180deg,#f0d9a8,#e4c07f);margin-bottom:12px;
-    box-shadow:inset 0 2px 8px rgba(90,52,24,.25);}
-  .lane{position:relative;height:46px;border-bottom:2px dashed rgba(122,74,36,.3);}
-  .lane:last-child{border-bottom:none;}
-  .lane:nth-child(odd){background:rgba(255,255,255,.12);}
-  .lane .lnum{position:absolute;left:6px;top:50%;transform:translateY(-50%);
-    width:20px;height:20px;border-radius:50%;color:#fff;font-size:11px;font-weight:800;z-index:3;
-    display:flex;align-items:center;justify-content:center;opacity:.9;}
-  .racer{position:absolute;left:0;top:50%;transform:translate(0,-50%);font-size:30px;z-index:2;
-    will-change:transform;}
-  .racer.run{animation:gallop .28s ease-in-out infinite;}
-  @keyframes gallop{50%{transform:translate(0,-62%) rotate(-4deg);}}
-  .finish{position:absolute;top:0;right:8px;width:14px;height:100%;z-index:1;
-    background:repeating-linear-gradient(45deg,#2b2b2b 0 6px,#fff 6px 12px);opacity:.85;}
-  .flag{position:absolute;top:-2px;right:4px;font-size:20px;z-index:4;}
+    .fpt-badge span {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+    }
 
-  .controls{margin-top:4px;}
-  .hint{text-align:center;font-size:12.5px;opacity:.8;margin-top:9px;color:var(--wood-d);font-weight:600;}
+    .main-title {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.25;
+      background: linear-gradient(90deg, #FFFFFF 0%, var(--gold) 50%, #FFA751 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 12px rgba(243, 112, 33, 0.3);
+      margin-bottom: 6px;
+    }
 
-  /* ===== RESULT ===== */
-  .overlay{position:fixed;inset:0;z-index:50;background:rgba(58,36,16,.82);backdrop-filter:blur(6px);
-    display:flex;align-items:center;justify-content:center;padding:22px;animation:fade .3s ease;}
-  @keyframes fade{from{opacity:0;}}
-  .result{width:100%;max-width:360px;text-align:center;background:linear-gradient(180deg,#fffdf8,#fff2e0);
-    color:var(--ink);border-radius:24px;padding:28px 22px;box-shadow:0 24px 60px rgba(0,0,0,.5);
-    animation:pop .4s ease;position:relative;overflow:hidden;border:3px solid var(--wood);}
-  .result.win{border-color:var(--fpt-orange);}
-  .r-emoji{font-size:62px;margin-bottom:8px;animation:bob 1.8s ease-in-out infinite;}
-  .r-title{font-size:23px;font-weight:800;margin-bottom:6px;color:var(--wood-d);}
-  .result.win .r-title{color:var(--fpt-orange);}
-  .r-desc{font-size:14.5px;line-height:1.55;opacity:.88;margin-bottom:20px;}
-  .r-desc b{color:var(--fpt-orange);}
+    .sub-title {
+      font-size: 13.5px;
+      color: rgba(255, 255, 255, 0.82);
+      line-height: 1.45;
+      padding: 0 8px;
+    }
 
-  .loader{display:flex;flex-direction:column;align-items:center;gap:14px;padding:18px 0;}
-  .spinner{width:52px;height:52px;border-radius:50%;border:5px solid rgba(243,112,33,.2);
-    border-top-color:var(--fpt-orange);animation:spin .8s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .loader p{font-size:14px;font-weight:700;color:var(--wood-d);}
+    /* Hướng dẫn trạng thái */
+    .instruction-pill {
+      margin: 10px auto 12px;
+      background: linear-gradient(90deg, rgba(243,112,33,0.2), rgba(255,215,0,0.2));
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      color: var(--gold-light);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      animation: pulseGlow 2s infinite;
+    }
 
-  .confetti{position:absolute;top:-10px;width:9px;height:14px;opacity:.9;animation:fall linear forwards;}
-  @keyframes fall{to{transform:translateY(420px) rotate(540deg);opacity:0;}}
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 8px rgba(243, 112, 33, 0.3); }
+      50% { box-shadow: 0 0 18px rgba(255, 215, 0, 0.65); }
+    }
 
-  .footer{text-align:center;font-size:11px;color:var(--wood-d);opacity:.7;margin-top:14px;font-weight:600;}
-</style>
+    /* Lưới 6 lá bài (3 cột x 2 hàng) */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin: auto 0;
+      perspective: 1000px;
+    }
+
+    .tarot-card {
+      aspect-ratio: 2 / 3.1;
+      position: relative;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.3s ease;
+      user-select: none;
+    }
+
+    .tarot-card:hover, .tarot-card:active {
+      transform: translateY(-6px) scale(1.03);
+    }
+
+    .tarot-card.selected {
+      transform: translateY(-10px) scale(1.07);
+      filter: drop-shadow(0 0 18px var(--gold));
+      z-index: 5;
+    }
+
+    .tarot-card.dimmed {
+      opacity: 0.4;
+      pointer-events: none;
+      transform: scale(0.95);
+    }
+
+    /* Thiết kế mặt lưng lá bài có Logo FPT */
+    .card-back {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #27175c 0%, #11092e 60%, #2a1347 100%);
+      border: 2px solid var(--gold);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.25);
+      padding: 7px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card-back-inner {
+      width: 100%;
+      height: 100%;
+      border: 1px dashed rgba(255, 215, 0, 0.55);
+      border-radius: 9px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 4px;
+      position: relative;
+      background: radial-gradient(circle at center, rgba(243, 112, 33, 0.18) 0%, transparent 70%);
+    }
+
+    /* Vòng tròn ma thuật xoay nhẹ */
+    .cosmic-ring {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 215, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 0 15px rgba(243, 112, 33, 0.35);
+    }
+
+    .cosmic-ring::before {
+      content: "";
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 1px dotted rgba(255, 215, 0, 0.65);
+      animation: spinSlow 14s linear infinite;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .corner-star {
+      font-size: 10px;
+      color: var(--gold);
+      opacity: 0.85;
+      letter-spacing: 3px;
+    }
+
+    .card-number-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.9;
+    }
+
+    /* Footer nhỏ */
+    .footer-note {
+      text-align: center;
+      font-size: 11.5px;
+      color: rgba(255, 255, 255, 0.55);
+      margin-top: 14px;
+    }
+
+    /* ================= MODAL NHẬP THÔNG TIN & KẾT QUẢ ================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 5, 18, 0.82);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 390px;
+      background: linear-gradient(165deg, #241952 0%, #120B2E 100%);
+      border: 1.5px solid rgba(255, 215, 0, 0.55);
+      border-radius: 22px;
+      padding: 24px 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(243, 112, 33, 0.25);
+      text-align: center;
+      position: relative;
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .modal-overlay.active .modal-box {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .form-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .form-desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    .input-group {
+      text-align: left;
+      margin-bottom: 14px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-field::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .input-field:focus {
+      border-color: var(--fpt-orange);
+      box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.25);
+    }
+
+    .error-msg {
+      color: #FF6B6B;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(90deg, var(--fpt-orange) 0%, #FF9900 100%);
+      color: #fff;
+      font-size: 15.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(243, 112, 33, 0.45);
+      transition: transform 0.2s, opacity 0.2s;
+      margin-top: 6px;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* ================= LÁ BÀI LẬT 3D KẾT QUẢ ================= */
+    .reveal-stage {
+      perspective: 1200px;
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+    }
+
+    .reveal-card-3d {
+      width: 100%;
+      min-height: 440px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.9s cubic-bezier(0.35, 1.3, 0.6, 1);
+    }
+
+    .reveal-card-3d.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .reveal-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 20px;
+    }
+
+    .reveal-back {
+      background: linear-gradient(145deg, #27175c 0%, #11092e 60%, #2a1347 100%);
+      border: 3px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    }
+
+    .reveal-front {
+      transform: rotateY(180deg);
+      background: linear-gradient(170deg, #FFFDF9 0%, #FFF3E0 100%);
+      color: #1F1938;
+      border: 3px solid var(--gold);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.75), 0 0 30px rgba(255, 215, 0, 0.35);
+    }
+
+    .card-top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed rgba(243, 112, 33, 0.35);
+      padding-bottom: 8px;
+    }
+
+    .luck-stars {
+      font-size: 16px;
+      letter-spacing: 2px;
+      color: #FFB400;
+      text-shadow: 0 1px 3px rgba(255, 180, 0, 0.3);
+    }
+
+    .card-category-tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .tag-special {
+      background: rgba(243, 112, 33, 0.15);
+      color: var(--fpt-orange);
+      border: 1px solid var(--fpt-orange);
+    }
+
+    .tag-message {
+      background: rgba(0, 102, 179, 0.12);
+      color: var(--fpt-blue);
+      border: 1px solid rgba(0, 102, 179, 0.4);
+    }
+
+    .card-title-text {
+      font-size: 21px;
+      font-weight: 800;
+      color: #1A103C;
+      margin: 8px 0 6px;
+    }
+
+    .card-icon-hero {
+      font-size: 44px;
+      margin: 4px 0;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+    }
+
+    .card-quote-box {
+      font-size: 14px;
+      line-height: 1.55;
+      color: #332B54;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(243, 112, 33, 0.2);
+      margin: 6px 0;
+      font-weight: 500;
+    }
+
+    .reward-highlight-box {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .reward-gift {
+      background: linear-gradient(90deg, var(--fpt-orange), #FF9500);
+      color: #fff;
+      box-shadow: 0 6px 15px rgba(243, 112, 33, 0.35);
+    }
+
+    .reward-wish {
+      background: linear-gradient(90deg, #E8F5E9, #FFF8E1);
+      color: #2E7D32;
+      border: 1px solid #81C784;
+    }
+
+    .sync-status {
+      font-size: 11.5px;
+      color: #51B848;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(255, 215, 0, 0.25);
+      border-top-color: var(--fpt-orange);
+      border-radius: 50%;
+      animation: spinSlow 0.8s linear infinite;
+      margin: 14px auto;
+    }
+
+    /* Confetti Canvas */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
 </head>
 <body>
-<div class="bg-deco">
-  <div class="sun"></div>
-  <div class="cloud" style="top:14%;animation-duration:38s;">☁️</div>
-  <div class="cloud" style="top:24%;font-size:30px;animation-duration:52s;animation-delay:-10s;">☁️</div>
-</div>
 
-<div class="stage">
-  <div class="brand">
-    <img class="logo" src="data:image/png;base64,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" alt="FPT">
-    <span class="tag">🤠 ĐUA THÚ CAO BỒI 🐂</span>
-  </div>
+  <div class="stars-bg"></div>
+  <canvas id="confettiCanvas"></canvas>
 
-  <!-- ===== SCREEN 1: FORM ===== -->
-  <div class="card" id="screenForm">
-    <div class="f-emoji">🏇</div>
-    <div class="f-title">Vào Trường Đua Cùng FPT!</div>
-    <div class="f-sub">Để lại thông tin, chọn chú thú của bạn và xem ai về nhất để rinh quà từ FPT Telecom.</div>
+  <!-- TEMPLATE LOGO FPT SVG TÁI SỬ DỤNG -->
+  <svg style="display:none;">
+    <symbol id="fpt-logo-svg" viewBox="0 0 150 54">
+      <!-- Khối F (Xanh dương FPT) -->
+      <path d="M12 8 H52 L46 20 H25 V25 H43 L39 36 H25 V48 H10 L12 8 Z" fill="#0066B3"/>
+      <!-- Khối P (Cam FPT) -->
+      <path d="M56 8 H88 C97 8 102 14 100 23 C98 32 90 36 80 36 H68 V48 H53 L56 8 Z M70 19 V26 H79 C83 26 85 24 85 22 C85 20 83 19 79 19 H70 Z" fill="#F37021"/>
+      <!-- Khối T (Xanh lá FPT) -->
+      <path d="M105 8 H144 L140 20 H129 V48 H114 V20 H101 L105 8 Z" fill="#51B848"/>
+    </symbol>
+  </svg>
 
-    <div class="field">
-      <label for="name">Họ và tên</label>
-      <input type="text" id="name" placeholder="Nguyễn Văn A" autocomplete="name">
-      <span class="err-msg" id="errName"></span>
+  <div class="app-container">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="fpt-badge">
+        <svg width="46" height="17"><use href="#fpt-logo-svg"></use></svg>
+        <span>Cosmic Tarot</span>
+      </div>
+      <h1 class="main-title">THÔNG ĐIỆP VŨ TRỤ FPT</h1>
+      <p class="sub-title">Hôm nay vũ trụ gửi lời nhắc và vận may gì đến bạn? Hãy lắng nghe trực giác và chạm vào <b>1 trong 6 lá bài</b> bên dưới!</p>
+      <div class="instruction-pill" id="statusPill">✨ Chạm vào lá bài bạn có cảm ứng mạnh nhất ✨</div>
     </div>
-    <div class="field">
-      <label for="phone">Số điện thoại</label>
-      <input type="tel" id="phone" placeholder="VD: 0912345678" inputmode="numeric" maxlength="10" autocomplete="tel">
-      <span class="err-msg" id="errPhone"></span>
+
+    <!-- LƯỚI 6 LÁ BÀI -->
+    <div class="cards-grid" id="cardsGrid">
+      <!-- Render tự động 6 lá bài bằng JS -->
     </div>
 
-    <button class="btn" id="btnStart">Vào trường đua 🤠</button>
-  </div>
-
-  <!-- ===== SCREEN 2: GAME ===== -->
-  <div class="card hidden" id="screenGame">
-    <div class="greet">Cao bồi <b id="hiName">bạn</b> ơi, chọn chú thú để đặt cược! 🍀</div>
-    <div class="pick-title">Chọn chú thú bạn tin sẽ <span>VỀ NHẤT</span>:</div>
-    <div class="pickers" id="pickers"></div>
-
-    <div class="track" id="track"></div>
-
-    <div class="controls">
-      <button class="btn" id="btnRace" disabled>🏁 BẮT ĐẦU ĐUA</button>
-      <div class="hint" id="hint">Hãy chọn 1 chú thú ở trên trước nhé</div>
+    <div class="footer-note">
+      100% lá bài mang năng lượng tích cực (3⭐ - 5⭐) & cơ hội nhận quà FPT
     </div>
   </div>
 
-  <div class="footer">© FPT Telecom · fpt.vn</div>
-</div>
+  <!-- MODAL 1: NHẬP THÔNG TIN KHÁCH HÀNG -->
+  <div class="modal-overlay" id="leadModal">
+    <div class="modal-box">
+      <button class="modal-close" id="closeLeadModal" title="Chọn lại lá khác">&times;</button>
+      <div style="margin-bottom: 10px;">
+        <svg width="68" height="25"><use href="#fpt-logo-svg"></use></svg>
+      </div>
+      <h2 class="form-title">MỞ KHÓA LÁ BÀI CỦA BẠN</h2>
+      <p class="form-desc" id="selectedCardText">Bạn đã chọn <b>Lá bài số 1</b>. Nhập thông tin để vũ trụ giải mã thông điệp và gửi quà nhé!</p>
 
-<!-- ===== RESULT OVERLAY ===== -->
-<div class="overlay hidden" id="overlay">
-  <div class="result" id="resultBox"></div>
-</div>
+      <form id="leadForm" novalidate>
+        <div class="input-group">
+          <label for="userName">Họ và tên của bạn *</label>
+          <input type="text" id="userName" class="input-field" placeholder="VD: Nguyễn Văn A" autocomplete="name" required />
+          <div class="error-msg" id="nameError">Vui lòng nhập họ và tên của bạn.</div>
+        </div>
 
-<script>
-/* ============ CONFIG ============ */
-const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxB9cVjtVvnGHymOtzSroTdXvplM9wTXKHQbrLm8r9kxezdhDwxP2Kq0T-SSZ2LE4XJ/exec";
-const WIN_RATE = 0.30;
-const REWARD_WIN  = "Bạn nhận được 1 phần quà từ FPT";
-const REWARD_MISS = "Chúc may mắn lần sau";
+        <div class="input-group">
+          <label for="userPhone">Số điện thoại (10 số VN) *</label>
+          <input type="tel" id="userPhone" class="input-field" placeholder="VD: 0901234567" maxlength="10" inputmode="numeric" autocomplete="tel" required />
+          <div class="error-msg" id="phoneError">SĐT không hợp lệ (gồm 10 số, bắt đầu bằng 03, 05, 07, 08, 09).</div>
+        </div>
 
-const RACERS = [
-  { ani:"🐂", color:"#c0392b", name:"Bò Tót Đỏ" },
-  { ani:"🐄", color:"#d4a017", name:"Bò Sữa" },
-  { ani:"🐎", color:"#2e86de", name:"Ngựa Chiến" },
-  { ani:"🐷", color:"#e056a0", name:"Heo Hồng" },
-  { ani:"🐏", color:"#27ae60", name:"Cừu Xanh" }
-];
+        <button type="submit" class="btn-submit" id="submitBtn">🔮 Lật Mở Lá Bài Ngay</button>
+      </form>
+    </div>
+  </div>
 
-/* ============ STATE ============ */
-let player = { name:"", phone:"" };
-let picked = -1;
-let racing = false;
+  <!-- MODAL 2: HIỆU ỨNG LOADING & LẬT BÀI 3D KẾT QUẢ -->
+  <div class="modal-overlay" id="resultModal">
+    <div class="reveal-stage">
+      <div class="reveal-card-3d" id="revealCard3D">
+        
+        <!-- Mặt sau lúc đang Loading gửi Google Sheets -->
+        <div class="reveal-face reveal-back">
+          <svg width="95" height="35"><use href="#fpt-logo-svg"></use></svg>
+          <div class="spinner"></div>
+          <h3 style="color: var(--gold); font-size: 18px; margin-bottom: 6px;">Đang kết nối tần số vũ trụ...</h3>
+          <p style="font-size: 13px; color: rgba(255,255,255,0.75);">Hệ thống đang ghi nhận vận may của bạn, vui lòng đợi trong giây lát!</p>
+        </div>
 
-/* ============ ELEMENTS ============ */
-const $ = id => document.getElementById(id);
-const screenForm=$("screenForm"), screenGame=$("screenGame");
-const nameInput=$("name"), phoneInput=$("phone");
-const errName=$("errName"), errPhone=$("errPhone");
-const overlay=$("overlay"), resultBox=$("resultBox");
-const pickers=$("pickers"), track=$("track");
+        <!-- Mặt trước khi lật mở thành công -->
+        <div class="reveal-face reveal-front">
+          <div class="card-top-bar">
+            <svg width="56" height="20"><use href="#fpt-logo-svg"></use></svg>
+            <div class="luck-stars" id="resStars">⭐⭐⭐⭐⭐</div>
+          </div>
 
-/* ============ BUILD PICKERS + TRACK ============ */
-RACERS.forEach((r,i)=>{
-  const pk=document.createElement("div");
-  pk.className="pk"; pk.dataset.i=i;
-  pk.innerHTML=`<span class="num" style="background:${r.color}">${i+1}</span><span class="ani">${r.ani}</span>`;
-  pk.addEventListener("click",()=>selectRacer(i));
-  pickers.appendChild(pk);
+          <div>
+            <span class="card-category-tag tag-special" id="resTag">LÁ BÀI ĐẶC BIỆT</span>
+            <div class="card-icon-hero" id="resIcon">🎁</div>
+            <h3 class="card-title-text" id="resTitle">Lá Bài Che Chở</h3>
+            <div class="card-quote-box" id="resQuote">
+              "Hôm nay vận may có thể bất ngờ từ trên trời rơi xuống trúng đầu bạn đấy!"
+            </div>
+          </div>
 
-  const lane=document.createElement("div");
-  lane.className="lane";
-  lane.innerHTML=`<span class="lnum" style="background:${r.color}">${i+1}</span>
-    <span class="racer" id="racer${i}" style="left:34px">${r.ani}</span>`;
-  track.appendChild(lane);
-});
-track.insertAdjacentHTML("beforeend",'<div class="finish"></div><div class="flag">🏁</div>');
+          <div style="width: 100%;">
+            <div class="reward-highlight-box reward-gift" id="resRewardBox">
+              🎉 Bạn nhận được: Nón bảo hiểm FPT
+            </div>
+            <div class="sync-status" id="resSyncStatus">
+              ✔ Đã lưu kết quả của <span id="resUserName">bạn</span> thành công!
+            </div>
+          </div>
+        </div>
 
-function selectRacer(i){
-  if(racing) return;
-  picked=i;
-  document.querySelectorAll(".pk").forEach(el=>el.classList.toggle("sel",+el.dataset.i===i));
-  $("btnRace").disabled=false;
-  $("hint").textContent=`Bạn chọn số ${i+1} — ${RACERS[i].name}. Bấm ĐUA để bắt đầu!`;
-}
+      </div>
+    </div>
+  </div>
 
-/* ============ VALIDATION ============ */
-const PHONE_RE=/^(0)(3[2-9]|5[25689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$/;
-phoneInput.addEventListener("input",e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,10);});
+  <script>
+    /*************************************************************************
+     * 1. CẤU HÌNH WEBHOOK GOOGLE SHEETS (CHỐNG CORS VỚI TEXT/PLAIN)
+     *************************************************************************/
+    const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxB9cVjtVvnGHymOtzSroTdXvplM9wTXKHQbrLm8r9kxezdhDwxP2Kq0T-SSZ2LE4XJ/exec";
 
-function validate(){
-  let ok=true;
-  const name=nameInput.value.trim(), phone=phoneInput.value.trim();
-  errName.textContent=""; errPhone.textContent="";
-  nameInput.classList.remove("err"); phoneInput.classList.remove("err");
-  if(name.length<2){errName.textContent="Vui lòng nhập họ tên hợp lệ.";nameInput.classList.add("err");ok=false;}
-  if(!/^0\d{9}$/.test(phone)){errPhone.textContent="Số điện thoại phải gồm đúng 10 chữ số.";phoneInput.classList.add("err");ok=false;}
-  else if(!PHONE_RE.test(phone)){errPhone.textContent="Số điện thoại không đúng định dạng nhà mạng Việt Nam.";phoneInput.classList.add("err");ok=false;}
-  return ok;
-}
+    /*************************************************************************
+     * 2. DỮ LIỆU BỘ BÀI 29 LÁ (9 LÁ QUÀ TẶNG - 20 LÁ THÔNG ĐIỆP TỪ 3-5 SAO)
+     *************************************************************************/
+    // GIỎ 1: 50% XÁC SUẤT RƠI VÀO GIỎ NÀY (9 lá bài trúng quà hiện vật FPT)
+    const SPECIAL_GIFT_CARDS = [
+      {
+        title: "Lá Bài Che Chở",
+        stars: 5,
+        icon: "⛑️",
+        quote: "Hôm nay vận may có thể bất ngờ từ trên trời rơi xuống trúng đầu bạn đấy! Đội ngay chiếc Nón bảo hiểm FPT này vào để đón lộc an toàn trên mọi nẻo đường nhé!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Nón bảo hiểm FPT",
+        rewardSheet: "Nón bảo hiểm FPT"
+      },
+      {
+        title: "Lá Bài Vững Tay Lái",
+        stars: 4,
+        icon: "🛵",
+        quote: "Vũ trụ thấy dạo này bạn hay phải di chuyển ngoài đường. Hãy luôn giữ cái đầu lạnh, trái tim nóng và một chiếc Nón bảo hiểm FPT thật ngầu để bình an tiến bước nha!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Nón bảo hiểm FPT",
+        rewardSheet: "Nón bảo hiểm FPT"
+      },
+      {
+        title: "Lá Bài Dẫn Lối Thành Công",
+        stars: 5,
+        icon: "🌟",
+        quote: "Mọi cung đường bạn đi hôm nay đều trải đầy hoa hồng và sự thuận lợi. Vũ trụ gửi tặng bạn 1 chiếc Nón bảo hiểm FPT làm người bạn đồng hành tin cậy nhé!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Nón bảo hiểm FPT",
+        rewardSheet: "Nón bảo hiểm FPT"
+      },
+      {
+        title: "Lá Bài Nạp Đầy Pin",
+        stars: 5,
+        icon: "🔋",
+        quote: "Tín hiệu vũ trụ báo rằng bạn đã làm việc rất chăm chỉ. Nếu thấy hơi cạn kiệt sức lực, hãy nhận ngay Sạc dự phòng FPT để 'sạc' lại 100% năng lượng tích cực nhé!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Sạc dự phòng FPT",
+        rewardSheet: "Sạc dự phòng FPT"
+      },
+      {
+        title: "Lá Bài Không Gián Đoạn",
+        stars: 5,
+        icon: "⚡",
+        quote: "Đừng để cuộc vui hay những kết nối quan trọng trong ngày bị ngắt quãng vì sập nguồn. Vũ trụ gửi tặng bạn 1 chiếc Sạc dự phòng FPT để luôn giữ lửa nhiệt huyết cả ngày!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Sạc dự phòng FPT",
+        rewardSheet: "Sạc dự phòng FPT"
+      },
+      {
+        title: "Lá Bài Năng Lượng Vô Tận",
+        stars: 4,
+        icon: "🔥",
+        quote: "Hôm nay bạn chính là một thỏi nam châm thu hút những điều tuyệt vời. Cầm ngay chiếc Sạc dự phòng FPT này để duy trì tần số năng lượng đỉnh cao suốt 24h nhé!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Sạc dự phòng FPT",
+        rewardSheet: "Sạc dự phòng FPT"
+      },
+      {
+        title: "Lá Bài Túi Ba Gang",
+        stars: 4,
+        icon: "👜",
+        quote: "Hôm nay sẽ có rất nhiều niềm vui, tài lộc và những điều dễ thương tìm đến bạn. Nhớ mang theo chiếc Túi Canvas FPT này để gói gọn hết mọi may mắn mang về nhà nhé!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Túi Canvas FPT",
+        rewardSheet: "Túi Canvas FPT"
+      },
+      {
+        title: "Lá Bài Gói Ghém Yêu Thương",
+        stars: 4,
+        icon: "🌿",
+        quote: "Mọi gánh nặng âu lo xin hãy bỏ lại phía sau, chỉ cần khoác lên vai sự trẻ trung và chiếc Túi Canvas FPT thời trang này để tự tin xuống phố thôi nào!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Túi Canvas FPT",
+        rewardSheet: "Túi Canvas FPT"
+      },
+      {
+        title: "Lá Bài Hành Trang Rực Rỡ",
+        stars: 5,
+        icon: "✨",
+        quote: "Chuẩn bị tinh thần nhé, một hành trình mới đầy ắp cơ hội đang vẫy gọi bạn! Vũ trụ tặng bạn chiếc Túi Canvas FPT cực chất để đựng đầy ắp những thành tựu sắp tới!",
+        rewardDisplay: "🎁 Bạn nhận được: 01 Túi Canvas FPT",
+        rewardSheet: "Túi Canvas FPT"
+      }
+    ];
 
-/* ============ START ============ */
-$("btnStart").addEventListener("click",()=>{
-  if(!validate()) return;
-  player.name=nameInput.value.trim();
-  player.phone=phoneInput.value.trim();
-  $("hiName").textContent=player.name;
-  screenForm.classList.add("hidden");
-  screenGame.classList.remove("hidden");
-});
+    // GIỎ 2: 50% XÁC SUẤT RƠI VÀO GIỎ NÀY (20 lá bài thông điệp may mắn từ 3-5 sao)
+    const LUCKY_MESSAGE_CARDS = [
+      { title: "Tốc Độ Ánh Sáng", stars: 5, icon: "🚀", quote: "Mọi rắc rối hay công việc tồn đọng hôm nay sẽ trôi tuột mượt mà nhanh như cáp quang FPT! Cứ tự tin chốt đơn, triển khai kế hoạch mới vì vũ trụ đang đứng về phía bạn." },
+      { title: "Căng Đét 5 Vạch", stars: 5, icon: "📶", quote: "Tín hiệu tài lộc và tình duyên của bạn hôm nay đang căng đét 5 vạch! Hãy mở lòng đón nhận một lời mời bất ngờ hoặc chủ động nhắn tin cho người bạn đang nghĩ tới nhé." },
+      { title: "Băng Thông Rộng Mở", stars: 4, icon: "🌈", quote: "Hôm nay là ngày tuyệt vời để mở rộng 'băng thông' tâm hồn. Đừng ngại thử một món ăn mới, đi một con đường mới; một cơ hội thú vị đang chờ bạn ở góc phố đấy!" },
+      { title: "Chữa Lành Đúng Lúc", stars: 3, icon: "🍀", quote: "Lời nhắc nhỏ từ vũ trụ: Đừng quên uống một ngụm nước mát, vươn vai hít thở sâu và mỉm cười. Cuối ngày hôm nay, một tin vui nhỏ sẽ đến giúp bạn xua tan mọi mệt mỏi!" },
+      { title: "Ping Thấp Lộc Cao", stars: 4, icon: "💎", quote: "Độ trễ (Ping) của sự buồn phiền hôm nay bằng 0! Mọi nỗ lực thầm lặng của bạn trong thời gian qua sắp sửa đơm hoa kết trái. Hãy chuẩn bị tinh thần đón nhận lời khen nhé!" },
+      { title: "Kết Nối Yêu Thương", stars: 3, icon: "💛", quote: "Giữa nhịp sống vội vã, hôm nay hãy dành ra 15 phút buổi tối để trò chuyện cùng người thân hoặc xem một bộ phim hay. Năng lượng bình yên sẽ giúp bạn bứt phá vào ngày mai!" },
+      { title: "Thần Tài Gõ Cửa", stars: 5, icon: "💰", quote: "Ting ting! Vũ trụ dự báo ví tiền của bạn sắp có biến động theo chiều hướng tăng vọt. Có thể là một khoản thưởng, một đơn hàng lớn hoặc ai đó bất ngờ mời bạn ăn ngon!" },
+      { title: "Xóa Bộ Nhớ Đệm", stars: 3, icon: "🧘", quote: "Não bộ của bạn cũng cần được 'Clear Cache' như máy tính vậy. Hôm nay hãy cho phép bản thân gác lại những chuyện đã qua để đón nhận nguồn cảm hứng sáng tạo mới mẻ nhé!" },
+      { title: "Quý Nhân Phù Trợ", stars: 5, icon: "🤝", quote: "Nếu hôm nay có việc gì khó, đừng ngại mở lời nhờ giúp đỡ. Một 'quý nhân' cực kỳ nhiệt tình và giỏi giang đang ở rất gần để hỗ trợ bạn giải quyết mọi thứ trong một nốt nhạc!" },
+      { title: "Nụ Cười Tỏa Nắng", stars: 4, icon: "☀️", quote: "Nụ cười của bạn hôm nay mang tần số thu hút may mắn cực mạnh. Hãy mỉm cười với người đối diện, bạn sẽ nhận lại được sự nhiệt tình và những điều tử tế bất ngờ đấy!" },
+      { title: "Bứt Phá Giới Hạn", stars: 5, icon: "🏆", quote: "Ý tưởng mà bạn đang ấp ủ hoàn toàn khả thi! Đừng chần chừ nữa, hôm nay chính là 'giờ hoàng đạo' để bạn bắt tay vào làm và khiến mọi người xung quanh phải trầm trồ." },
+      { title: "Trạm Dừng Bình Yên", stars: 3, icon: "☕", quote: "Không sao cả nếu hôm nay bạn muốn đi chậm lại một chút. Hãy tự thưởng cho mình một ly trà sữa hoặc cà phê thơm lừng, tận hưởng từng khoảnh khắc thư giãn của riêng bạn nhé!" },
+      { title: "Tần Số Hạnh Phúc", stars: 4, icon: "🎵", quote: "Bạn đang phát ra một nguồn năng lượng cực kỳ tích cực và ấm áp. Hôm nay, một cuộc trò chuyện tình cờ sẽ mang lại cho bạn tiếng cười sảng khoái và cảm giác được thấu hiểu." },
+      { title: "Vượt Chướng Ngại Vật", stars: 4, icon: "🛡️", quote: "Khó khăn nhỏ trước mắt chỉ là bước đệm để bạn bật cao hơn mà thôi. Giữ vững sự tập trung nhé, đến chiều tối nay bạn sẽ thở phào nhẹ nhõm vì mọi việc đều đâu vào đấy!" },
+      { title: "Lộc Ăn Uống", stars: 4, icon: "🍲", quote: "Bụng đói thì đầu óc sao minh mẫn được! Vũ trụ mách bảo hôm nay bạn rất có 'lộc ăn', hãy chuẩn bị tinh thần được đồng nghiệp hoặc bạn bè rủ rê một chầu ngon lành nha!" },
+      { title: "Trực Giác Nhạy Bén", stars: 5, icon: "🔮", quote: "Giác quan thứ sáu của bạn hôm nay hoạt động chuẩn xác đến 99%! Khi đứng trước hai sự lựa chọn, hãy tin vào cảm giác đầu tiên mách bảo trong tim bạn nhé." },
+      { title: "Ngủ Ngon Đêm Nay", stars: 3, icon: "🌙", quote: "Mọi âu lo của ngày hôm nay sẽ dừng lại trước cánh cửa phòng ngủ của bạn. Tối nay bạn sẽ có một giấc ngủ thật sâu, thật ngon và thức dậy với tinh thần sảng khoái nhất!" },
+      { title: "Tỏa Sáng Rực Rỡ", stars: 5, icon: "👑", quote: "Đừng đứng trong bóng tối nữa, hôm nay sân khấu là của bạn! Sự chỉn chu và duyên dáng của bạn đang ghi điểm tuyệt đối trong mắt những người xung quanh đấy." },
+      { title: "Gió Thuận Buồm Xuôi", stars: 4, icon: "⛵", quote: "Mọi thủ tục, giấy tờ hay các cuộc hẹn trong ngày hôm nay đều diễn ra suôn sẻ đến bất ngờ. Đèn xanh đang bật trên mọi ngả đường bạn đi!" },
+      { title: "May Mắn Nhân Đôi", stars: 5, icon: "🎉", quote: "Không chỉ một mà tới hai niềm vui sẽ gõ cửa nhà bạn trong hôm nay! Hãy giữ tâm thế hào hứng và sẵn sàng đón nhận những món quà tinh thần tuyệt vời từ cuộc sống nhé." }
+    ];
 
-/* ============ RACE ============ */
-$("btnRace").addEventListener("click",startRace);
+    /*************************************************************************
+     * 3. KHỞI TẠO 6 LÁ BÀI TRÊN MÀN HÌNH CHÍNH
+     *************************************************************************/
+    const cardsGrid = document.getElementById("cardsGrid");
+    const leadModal = document.getElementById("leadModal");
+    const resultModal = document.getElementById("resultModal");
+    const revealCard3D = document.getElementById("revealCard3D");
+    const selectedCardText = document.getElementById("selectedCardText");
+    const closeLeadModal = document.getElementById("closeLeadModal");
+    
+    let currentSelectedCardIndex = null;
+    let isGameCompleted = false;
 
-function startRace(){
-  if(racing || picked<0) return;
-  racing=true;
-  $("btnRace").disabled=true;
-  document.querySelectorAll(".pk").forEach(el=>el.style.pointerEvents="none");
-  $("hint").textContent="Các chú thú đang phi nước đại... 💨";
-
-  const isWin = Math.random() < WIN_RATE;
-  // winner lane: player's pick if win, else a random other racer
-  let winner = picked;
-  if(!isWin){
-    const others=RACERS.map((_,i)=>i).filter(i=>i!==picked);
-    winner=others[Math.floor(Math.random()*others.length)];
-  }
-
-  const lane0=track.querySelector(".lane");
-  const trackW = track.clientWidth;
-  const startX = 34;
-  const finishX = trackW - 44;          // stop point (before flag)
-  const range = finishX - startX;
-
-  const pos = RACERS.map(()=>0);        // 0..1 progress
-  const base = RACERS.map(()=> 0.0055 + Math.random()*0.0025);
-  base[winner] += 0.0022;               // winner a touch faster
-  const els = RACERS.map((_,i)=>$("racer"+i));
-  els.forEach(e=>e.classList.add("run"));
-
-  const timer=setInterval(()=>{
-    for(let i=0;i<RACERS.length;i++){
-      if(pos[i]>=1) continue;
-      pos[i] += base[i]*(0.55+Math.random()*0.9);   // jitter -> lead changes
-      // keep non-winners from crossing before the winner
-      if(i!==winner && pos[i]>0.94 && pos[winner]<1) pos[i]=0.94;
-      if(pos[i]>1) pos[i]=1;
-      els[i].style.transform=`translate(${pos[i]*range}px,-50%)`;
+    function renderSixCards() {
+      cardsGrid.innerHTML = "";
+      for (let i = 1; i <= 6; i++) {
+        const cardEl = document.createElement("div");
+        cardEl.className = "tarot-card";
+        cardEl.dataset.index = i;
+        cardEl.innerHTML = `
+          <div class="card-back">
+            <div class="card-back-inner">
+              <div class="corner-star">✦ ✧ ✦</div>
+              <div class="cosmic-ring">
+                <svg width="48" height="18"><use href="#fpt-logo-svg"></use></svg>
+              </div>
+              <div class="card-number-label">Lá số 0${i}</div>
+            </div>
+          </div>
+        `;
+        cardEl.addEventListener("click", () => handleSelectCard(i, cardEl));
+        cardsGrid.appendChild(cardEl);
+      }
     }
-    if(pos[winner]>=1){
-      clearInterval(timer);
-      els.forEach(e=>e.classList.remove("run"));
-      setTimeout(()=>finishRace(isWin,winner),500);
+
+    function handleSelectCard(index, cardEl) {
+      if (isGameCompleted) return;
+      currentSelectedCardIndex = index;
+
+      // Hiệu ứng làm nổi bật lá bài vừa chọn
+      document.querySelectorAll(".tarot-card").forEach(el => {
+        if (el === cardEl) {
+          el.classList.add("selected");
+          el.classList.remove("dimmed");
+        } else {
+          el.classList.add("dimmed");
+          el.classList.remove("selected");
+        }
+      });
+
+      selectedCardText.innerHTML = `Bạn đã chạm vào <b>Lá bài số 0${index}</b>. Hãy nhập Họ tên & SĐT để mở khóa thông điệp vũ trụ nhé!`;
+      leadModal.classList.add("active");
     }
-  },30);
-}
 
-/* ============ FINISH -> SEND -> RESULT ============ */
-function finishRace(isWin,winner){
-  const reward=isWin?REWARD_WIN:REWARD_MISS;
-  overlay.classList.remove("hidden");
-  resultBox.className="result";
-  resultBox.innerHTML=`<div class="loader"><div class="spinner"></div><p>Đang ghi nhận kết quả...</p></div>`;
-  sendToSheet(player.name,player.phone,reward).finally(()=>showResult(isWin,winner,reward));
-}
+    closeLeadModal.addEventListener("click", () => {
+      leadModal.classList.remove("active");
+      document.querySelectorAll(".tarot-card").forEach(el => {
+        el.classList.remove("selected", "dimmed");
+      });
+    });
 
-/* ============ SEND DATA (CORS-safe) ============ */
-function sendToSheet(name,phone,reward){
-  return fetch(WEBHOOK_URL,{
-    method:"POST",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify({name,phone,reward})
-  }).then(r=>r.text()).catch(err=>{console.warn("Gửi dữ liệu lỗi:",err);});
-}
+    /*************************************************************************
+     * 4. THUẬT TOÁN RANDOM 2 TẦNG (CHUẨN 50% QUÀ TẶNG - 50% THÔNG ĐIỆP)
+     *************************************************************************/
+    function drawRandomCard() {
+      const isSpecialGift = Math.random() < 0.5; // 50% cơ hội trúng quà
 
-/* ============ RESULT ============ */
-function showResult(isWin,winner,reward){
-  const w=RACERS[winner];
-  if(isWin){
-    resultBox.className="result win";
-    resultBox.innerHTML=`
-      <div class="r-emoji">🎉</div>
-      <div class="r-title">Về nhất rồi!</div>
-      <div class="r-desc">Chú ${w.ani} số <b>${winner+1}</b> bạn chọn đã cán đích đầu tiên!<br><b>${reward}</b>.<br>FPT sẽ liên hệ số <b>${player.phone}</b> để trao quà. 💛</div>
-      <button class="btn" id="btnClose">Tuyệt vời 🎊</button>`;
-    confettiBurst();
-  }else{
-    resultBox.className="result";
-    resultBox.innerHTML=`
-      <div class="r-emoji">😅</div>
-      <div class="r-title">Hụt mất rồi!</div>
-      <div class="r-desc">Lần này chú ${w.ani} số <b>${winner+1}</b> về nhất. ${reward}!<br>Thông tin của bạn đã được ghi nhận — theo dõi FPT để có thêm cơ hội nhé!</div>
-      <button class="btn ghost" id="btnClose">Đóng</button>`;
-  }
-  $("btnClose").addEventListener("click",()=>overlay.classList.add("hidden"));
-}
+      if (isSpecialGift) {
+        const randomIndex = Math.floor(Math.random() * SPECIAL_GIFT_CARDS.length);
+        const card = SPECIAL_GIFT_CARDS[randomIndex];
+        return {
+          isGift: true,
+          title: card.title,
+          stars: card.stars,
+          icon: card.icon,
+          quote: card.quote,
+          rewardDisplay: card.rewardDisplay,
+          rewardSheet: card.rewardSheet
+        };
+      } else {
+        const randomIndex = Math.floor(Math.random() * LUCKY_MESSAGE_CARDS.length);
+        const card = LUCKY_MESSAGE_CARDS[randomIndex];
+        return {
+          isGift: false,
+          title: card.title,
+          stars: card.stars,
+          icon: card.icon,
+          quote: card.quote,
+          rewardDisplay: `✨ Vía May Mắn ${card.stars} Sao Từ FPT`,
+          rewardSheet: `Lời chúc: ${card.title} (${card.stars} Sao)`
+        };
+      }
+    }
 
-/* ============ CONFETTI ============ */
-function confettiBurst(){
-  const colors=["#F37021","#0a6cff","#36b37e","#ffd56b","#ff5a8a","#7a5cff"];
-  for(let i=0;i<60;i++){
-    const c=document.createElement("div");
-    c.className="confetti";
-    c.style.left=Math.random()*100+"%";
-    c.style.background=colors[i%colors.length];
-    c.style.animationDuration=(1.4+Math.random()*1.4)+"s";
-    c.style.animationDelay=(Math.random()*.4)+"s";
-    c.style.transform=`rotate(${Math.random()*360}deg)`;
-    if(Math.random()>.5) c.style.borderRadius="50%";
-    resultBox.appendChild(c);
-    setTimeout(()=>c.remove(),3200);
-  }
-}
-</script>
+    /*************************************************************************
+     * 5. KIỂM TRA FORM & GỬI DỮ LIỆU VỀ GOOGLE SHEETS QUA FETCH
+     *************************************************************************/
+    const leadForm = document.getElementById("leadForm");
+    const userNameInput = document.getElementById("userName");
+    const userPhoneInput = document.getElementById("userPhone");
+    const nameError = document.getElementById("nameError");
+    const phoneError = document.getElementById("phoneError");
+    const submitBtn = document.getElementById("submitBtn");
+
+    // Chỉ cho phép nhập số vào ô điện thoại
+    userPhoneInput.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, "");
+    });
+
+    function validateVNPhone(phone) {
+      const vnPhoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
+      return vnPhoneRegex.test(phone);
+    }
+
+    leadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = userNameInput.value.trim();
+      const phone = userPhoneInput.value.trim();
+      let valid = true;
+
+      if (name.length < 2) {
+        nameError.style.display = "block";
+        valid = false;
+      } else {
+        nameError.style.display = "none";
+      }
+
+      if (!validateVNPhone(phone)) {
+        phoneError.style.display = "block";
+        valid = false;
+      } else {
+        phoneError.style.display = "none";
+      }
+
+      if (!valid) return;
+
+      // Bốc lá bài theo tỉ lệ 50/50
+      const drawnCard = drawRandomCard();
+      const reward = drawnCard.rewardSheet;
+
+      // Ẩn form, hiện Modal Loading 3D
+      leadModal.classList.remove("active");
+      resultModal.classList.add("active");
+      submitBtn.disabled = true;
+
+      // Đổ dữ liệu vào mặt trước lá bài
+      document.getElementById("resStars").textContent = "⭐".repeat(drawnCard.stars);
+      const resTag = document.getElementById("resTag");
+      const resRewardBox = document.getElementById("resRewardBox");
+
+      if (drawnCard.isGift) {
+        resTag.textContent = "LÁ BÀI ĐẶC BIỆT • TRÚNG QUÀ";
+        resTag.className = "card-category-tag tag-special";
+        resRewardBox.className = "reward-highlight-box reward-gift";
+      } else {
+        resTag.textContent = "THÔNG ĐIỆP VŨ TRỤ • ĐẠI CÁT";
+        resTag.className = "card-category-tag tag-message";
+        resRewardBox.className = "reward-highlight-box reward-wish";
+      }
+
+      document.getElementById("resIcon").textContent = drawnCard.icon;
+      document.getElementById("resTitle").textContent = drawnCard.title;
+      document.getElementById("resQuote").textContent = `"${drawnCard.quote}"`;
+      resRewardBox.textContent = drawnCard.rewardDisplay;
+      document.getElementById("resUserName").textContent = name;
+
+      // Gọi Webhook Google Apps Script đúng chuẩn chống lỗi CORS
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({ name, phone, reward })
+        });
+      } catch (err) {
+        console.warn("Ghi chú kết nối:", err);
+      }
+
+      // Lật lá bài 3D và bắn pháo giấy chúc mừng
+      setTimeout(() => {
+        revealCard3D.classList.add("flipped");
+        launchConfetti();
+        isGameCompleted = true;
+        document.getElementById("statusPill").textContent = "🎉 Bạn đã nhận thông điệp hôm nay!";
+      }, 650);
+    });
+
+    /*************************************************************************
+     * 6. HIỆU ỨNG PHÁO GIẤY CHÚC MỪNG (CONFETTI)
+     *************************************************************************/
+    function launchConfetti() {
+      const canvas = document.getElementById("confettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ["#F37021", "#0066B3", "#51B848", "#FFD700", "#FFFFFF"];
+      const particles = Array.from({ length: 85 }, () => ({
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        vx: (Math.random() - 0.5) * 14,
+        vy: (Math.random() - 0.8) * 15,
+        size: Math.random() * 7 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        vr: (Math.random() - 0.5) * 10
+      }));
+
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35; // Trọng lực
+          p.rotation += p.vr;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        });
+
+        frame++;
+        if (frame < 130) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+
+    // Khởi chạy 6 lá bài khi mở trang
+    renderSixCards();
+  </script>
 </body>
 </html>

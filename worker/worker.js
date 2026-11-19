@@ -1,5 +1,6 @@
 /**
- * Cloudflare Worker – minigame "Vòng quay may mắn" (FPT Telecom). Đặc tả: yeucau.md mục 2, 3, 4.
+ * Cloudflare Worker – minigame "Vòng quay may mắn" bản 2 (quà Móc khoá / Nón / Bình nước / Túi + 3 voucher).
+ * Clone từ game gốc ở thư mục gốc repo; dùng chung D1 "vong-quay" nhưng bảng riêng spins_qt / stock_qt.
  *
  * Worker này chạy chung với giao diện (thư mục public/, xem wrangler.jsonc ở gốc repo).
  * Mọi API nằm dưới tiền tố /api (vd POST /api/spin); bảng D1 tự tạo ở lần chạy đầu.
@@ -13,22 +14,26 @@
  *   POST /check        { phone }                    → { result:"ok", open, played:false } | { result:"ok", open, played:true, ...kết quả }
  *   POST /spin         { name, phone, area, area_other, src }   → { result:"success", ...kết quả } | { result:"duplicate", ...kết quả cũ }
  *                                                     | { result:"closed" } | { result:"error", message }
- *   GET  /admin/stock?key=…                         → { result:"ok", stock:{ AOMUA:{total,used,remaining}, MUBH:{…} } }
- *   POST /admin/stock  { key, AOMUA?, MUBH? }       → cập nhật tổng số lượng (không nhỏ hơn số đã phát)
+ *   GET  /admin/stock?key=…                         → { result:"ok", stock:{ MOCKHOA:{total,used,remaining}, NON:{…}, BINHNUOC:{…}, TUI:{…} } }
+ *   POST /admin/stock  { key, MOCKHOA?, NON?, BINHNUOC?, TUI? } → cập nhật tổng số lượng (không nhỏ hơn số đã phát)
  *   GET  /?action=summary&key=…                     → số liệu tổng hợp (JSON) cho admin.html
  *   GET  /?action=list&key=…                        → danh sách lượt quay (JSON)
  *   GET  /?action=export&key=…                      → CSV toàn bộ dữ liệu
  */
 
 // ===== CẤU HÌNH =====
-// Thứ tự trong mảng = thứ tự ô trên vòng quay (slot 0 ở đỉnh, theo chiều kim đồng hồ). Phải khớp PRIZES trong app/game.js.
+// Thứ tự trong mảng = thứ tự ô trên vòng quay (slot 0 ở đỉnh, theo chiều kim đồng hồ). Phải khớp PRIZES trong public/game.js.
+// weight tính theo phần vạn (tổng 10.000): mỗi quà hiện vật 2%, 3 voucher chia 92% theo tỉ lệ 6 : 2 : 1 như game gốc.
 const PRIZES = [
-  { code: "V150",  name: "Voucher 150.000đ", weight: 60, limited: false },
-  { code: "AOMUA", name: "Áo mưa",           weight: 5,  limited: true  },
-  { code: "V200",  name: "Voucher 200.000đ", weight: 20, limited: false },
-  { code: "MUBH",  name: "Mũ bảo hiểm",      weight: 5,  limited: true  },
-  { code: "V300",  name: "Voucher 300.000đ", weight: 10, limited: false },
+  { code: "V150",     name: "Voucher 150.000đ", weight: 6134, limited: false },
+  { code: "MOCKHOA",  name: "Móc khoá",         weight: 200,  limited: true  },
+  { code: "V200",     name: "Voucher 200.000đ", weight: 2044, limited: false },
+  { code: "NON",      name: "Nón",              weight: 200,  limited: true  },
+  { code: "V300",     name: "Voucher 300.000đ", weight: 1022, limited: false },
+  { code: "BINHNUOC", name: "Bình nước",        weight: 200,  limited: true  },
+  { code: "TUI",      name: "Túi",              weight: 200,  limited: true  },
 ];
+const LIMITED_CODES = PRIZES.filter((p) => p.limited).map((p) => p.code);
 const AREAS = ["Tân Bình", "Quận 4", "Quận 6", "Khác"]; // "Khác" → bắt buộc có area_other (người chơi tự nhập)
 
 // Thời gian chương trình, giờ Việt Nam "yyyy-MM-dd HH:mm". Để trống = không khoá.
@@ -82,7 +87,7 @@ function weightedPick(list) {
 }
 
 function claimCode() {
-  let s = "VQ-";
+  let s = "QT-";
   for (let i = 0; i < 6; i++) s += CLAIM_ALPHABET[randomInt(CLAIM_ALPHABET.length)];
   return s;
 }
@@ -129,7 +134,7 @@ function checkKey(env, key) {
 
 async function findByPhoneKey(db, phoneKey) {
   return db
-    .prepare("SELECT prize_code, prize_name, claim_code, created_at, area, area_other FROM spins WHERE phone_key = ?1")
+    .prepare("SELECT prize_code, prize_name, claim_code, created_at, area, area_other FROM spins_qt WHERE phone_key = ?1")
     .bind(phoneKey)
     .first();
 }
@@ -138,9 +143,9 @@ async function stockInfo(db) {
   const { results } = await db
     .prepare(
       `SELECT p.code AS code, COALESCE(s.total, 0) AS total,
-              (SELECT COUNT(*) FROM spins WHERE prize_code = p.code) AS used
-       FROM (SELECT 'AOMUA' AS code UNION ALL SELECT 'MUBH') AS p
-       LEFT JOIN stock s ON s.prize_code = p.code`
+              (SELECT COUNT(*) FROM spins_qt WHERE prize_code = p.code) AS used
+       FROM (SELECT 'MOCKHOA' AS code UNION ALL SELECT 'NON' UNION ALL SELECT 'BINHNUOC' UNION ALL SELECT 'TUI') AS p
+       LEFT JOIN stock_qt s ON s.prize_code = p.code`
     )
     .all();
   const out = {};
@@ -190,14 +195,14 @@ async function handleSpin(request, env, ctx) {
   const fallback = rolled.limited ? weightedPick(PRIZES.filter((p) => !p.limited)) : rolled;
 
   // 1 câu lệnh duy nhất: kiểm tra tồn kho + chống trùng SĐT + ghi kết quả → không phát vượt số lượng khi nhiều người quay cùng lúc
-  const sql = `INSERT INTO spins (created_at, day, name, phone, phone_key, area, prize_code, prize_name, rolled_code, claim_code, src, area_other)
+  const sql = `INSERT INTO spins_qt (created_at, day, name, phone, phone_key, area, prize_code, prize_name, rolled_code, claim_code, src, area_other)
      SELECT ?1, ?2, ?3, ?4, ?5, ?6,
             CASE WHEN g.ok THEN ?7 ELSE ?9 END,
             CASE WHEN g.ok THEN ?8 ELSE ?10 END,
             ?7, ?11, ?12, ?14
      FROM (SELECT (?13 = 0) OR (
-             COALESCE((SELECT total FROM stock WHERE prize_code = ?7), 0)
-             > (SELECT COUNT(*) FROM spins WHERE prize_code = ?7)
+             COALESCE((SELECT total FROM stock_qt WHERE prize_code = ?7), 0)
+             > (SELECT COUNT(*) FROM spins_qt WHERE prize_code = ?7)
            ) AS ok) AS g
      WHERE 1
      ON CONFLICT (phone_key) DO NOTHING
@@ -254,7 +259,7 @@ async function handleStockPost(request, env) {
 
   const now = vnNow();
   const updates = [];
-  for (const code of ["AOMUA", "MUBH"]) {
+  for (const code of LIMITED_CODES) {
     if (data[code] === undefined || data[code] === null || data[code] === "") continue;
     const n = Number(data[code]);
     if (!Number.isInteger(n) || n < 0 || n > 1000000) {
@@ -278,8 +283,8 @@ async function handleStockPost(request, env) {
   await env.DB.batch(
     updates.map((u) =>
       env.DB.prepare(
-        `INSERT INTO stock (prize_code, total, updated_at)
-         SELECT ?1, ?2, ?3 WHERE ?2 >= (SELECT COUNT(*) FROM spins WHERE prize_code = ?1)
+        `INSERT INTO stock_qt (prize_code, total, updated_at)
+         SELECT ?1, ?2, ?3 WHERE ?2 >= (SELECT COUNT(*) FROM spins_qt WHERE prize_code = ?1)
          ON CONFLICT (prize_code) DO UPDATE SET total = excluded.total, updated_at = excluded.updated_at`
       ).bind(u.code, u.n, now)
     )
@@ -291,10 +296,10 @@ async function handleStockPost(request, env) {
 async function handleSummary(env) {
   const db = env.DB;
   const [{ results: byPrize }, { results: byAreaPrize }, { results: byDayPrize }, swapped, stock] = await Promise.all([
-    db.prepare("SELECT prize_code, COUNT(*) AS n FROM spins GROUP BY prize_code").all(),
-    db.prepare("SELECT area, prize_code, COUNT(*) AS n FROM spins GROUP BY area, prize_code").all(),
-    db.prepare("SELECT day, prize_code, COUNT(*) AS n FROM spins GROUP BY day, prize_code ORDER BY day DESC").all(),
-    db.prepare("SELECT COUNT(*) AS n FROM spins WHERE rolled_code <> prize_code").first(),
+    db.prepare("SELECT prize_code, COUNT(*) AS n FROM spins_qt GROUP BY prize_code").all(),
+    db.prepare("SELECT area, prize_code, COUNT(*) AS n FROM spins_qt GROUP BY area, prize_code").all(),
+    db.prepare("SELECT day, prize_code, COUNT(*) AS n FROM spins_qt GROUP BY day, prize_code ORDER BY day DESC").all(),
+    db.prepare("SELECT COUNT(*) AS n FROM spins_qt WHERE rolled_code <> prize_code").first(),
     stockInfo(db),
   ]);
 
@@ -341,14 +346,14 @@ async function handleSummary(env) {
 async function handleList(env) {
   const { results } = await env.DB.prepare(
     `SELECT created_at, day, name, phone, area, area_other, prize_code, prize_name, rolled_code, claim_code, src
-     FROM spins ORDER BY id DESC`
+     FROM spins_qt ORDER BY id DESC`
   ).all();
   return json({ result: "ok", rows: results });
 }
 
 async function handleExport(env) {
   const { results } = await env.DB.prepare(
-    "SELECT created_at, name, phone, area, area_other, prize_name, rolled_code, prize_code, claim_code, src FROM spins ORDER BY id"
+    "SELECT created_at, name, phone, area, area_other, prize_name, rolled_code, prize_code, claim_code, src FROM spins_qt ORDER BY id"
   ).all();
   const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const head = ["Thời gian", "Họ tên", "Số điện thoại", "Khu vực", "Khu vực tự nhập (Khác)", "Quà nhận", "Quà quay ra ban đầu", "Mã nhận quà", "Nguồn QR"];
@@ -361,7 +366,7 @@ async function handleExport(env) {
   return new Response("﻿" + lines.join("\r\n"), {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="vong-quay-${vnNow().slice(0, 10)}.csv"`,
+      "Content-Disposition": `attachment; filename="vong-quay-qua-tang-${vnNow().slice(0, 10)}.csv"`,
       ...CORS,
     },
   });
@@ -369,16 +374,16 @@ async function handleExport(env) {
 
 // ===== TỰ TẠO BẢNG (lần đầu mỗi isolate; an toàn khi chạy lại) – giống schema.sql =====
 const SCHEMA = [
-  `CREATE TABLE IF NOT EXISTS spins (
+  `CREATE TABLE IF NOT EXISTS spins_qt (
      id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT NOT NULL, day TEXT NOT NULL,
      name TEXT NOT NULL, phone TEXT NOT NULL, phone_key TEXT NOT NULL UNIQUE,
      area TEXT NOT NULL, area_other TEXT NOT NULL DEFAULT '',
      prize_code TEXT NOT NULL, prize_name TEXT NOT NULL, rolled_code TEXT NOT NULL,
      claim_code TEXT NOT NULL UNIQUE, src TEXT NOT NULL DEFAULT '')`,
-  "CREATE INDEX IF NOT EXISTS idx_spins_prize ON spins (prize_code)",
-  "CREATE INDEX IF NOT EXISTS idx_spins_day ON spins (day)",
-  "CREATE TABLE IF NOT EXISTS stock (prize_code TEXT PRIMARY KEY, total INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT '')",
-  "INSERT OR IGNORE INTO stock (prize_code, total, updated_at) VALUES ('AOMUA', 0, ''), ('MUBH', 0, '')",
+  "CREATE INDEX IF NOT EXISTS idx_spins_qt_prize ON spins_qt (prize_code)",
+  "CREATE INDEX IF NOT EXISTS idx_spins_qt_day ON spins_qt (day)",
+  "CREATE TABLE IF NOT EXISTS stock_qt (prize_code TEXT PRIMARY KEY, total INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT '')",
+  "INSERT OR IGNORE INTO stock_qt (prize_code, total, updated_at) VALUES ('MOCKHOA', 0, ''), ('NON', 0, ''), ('BINHNUOC', 0, ''), ('TUI', 0, '')",
 ];
 let schemaReady = null;
 function ensureSchema(db) {

@@ -1,8 +1,9 @@
-// Cloudflare Workers Builds chạy "npx wrangler deploy" với file này mỗi lần push lên main.
+// Cloudflare Workers Builds chạy "npx wrangler deploy" với file này mỗi lần push lên nhánh minigames.
+// Nhánh "minigames": bản quà Móc khoá/Nón/Bình nước/Túi → Worker "minigames" (build từ nhánh minigames)
 // - public/  : giao diện game (index.html) + trang quản trị (admin.html)
 // - worker/  : API dưới /api, lưu dữ liệu vào D1 "vong-quay"
 {
-  "name": "minigame",
+  "name": "minigames",
   "main": "worker/worker.js",
   "compatibility_date": "2026-11-10",
   "assets": {

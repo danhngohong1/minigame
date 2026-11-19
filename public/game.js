@@ -7,21 +7,23 @@
   // Để trống "" = CHẾ ĐỘ DEMO (random trên máy, chỉ để thử giao diện – không dùng khi chạy thật).
   const API_BASE = "/api";
 
-  // Thứ tự = thứ tự ô trên vòng quay, PHẢI khớp PRIZES trong cloudflare-vongquay/worker.js.
+  // Thứ tự = thứ tự ô trên vòng quay, PHẢI khớp PRIZES trong minigames/worker/worker.js.
   // Tỉ lệ chỉ dùng cho chế độ demo; khi chạy thật Worker quyết định kết quả.
   const PRIZES = [
-    { code: "V150",  name: "Voucher 150.000đ", short: ["VOUCHER", "150K"], value: "150.000", kind: "voucher", weight: 60, fill: "#FFE042", text: "#C2410C" },
-    { code: "AOMUA", name: "Áo mưa",           short: ["ÁO", "MƯA"],       icon: "ic-raincoat", kind: "gift", weight: 5, fill: "#F27321", text: "#FFFFFF" },
-    { code: "V200",  name: "Voucher 200.000đ", short: ["VOUCHER", "200K"], value: "200.000", kind: "voucher", weight: 20, fill: "#FBB117", text: "#C2410C" },
-    { code: "MUBH",  name: "Mũ bảo hiểm",      short: ["MŨ BẢO", "HIỂM"],  icon: "ic-helmet",   kind: "gift", weight: 5, fill: "#E8521E", text: "#FFFFFF" },
-    { code: "V300",  name: "Voucher 300.000đ", short: ["VOUCHER", "300K"], value: "300.000", kind: "voucher", weight: 10, fill: "#FFC629", text: "#C2410C" },
+    { code: "V150",     name: "Voucher 150.000đ", short: ["VOUCHER", "150K"], value: "150.000", kind: "voucher", weight: 6134, fill: "#FFE042", text: "#C2410C" },
+    { code: "MOCKHOA",  name: "Móc khoá",         short: ["MÓC", "KHOÁ"],     icon: "ic-keychain", kind: "gift", weight: 200, fill: "#F27321", text: "#FFFFFF" },
+    { code: "V200",     name: "Voucher 200.000đ", short: ["VOUCHER", "200K"], value: "200.000", kind: "voucher", weight: 2044, fill: "#FBB117", text: "#C2410C" },
+    { code: "NON",      name: "Nón",              short: ["", "NÓN"],         icon: "ic-cap",      kind: "gift", weight: 200, fill: "#E8521E", text: "#FFFFFF" },
+    { code: "V300",     name: "Voucher 300.000đ", short: ["VOUCHER", "300K"], value: "300.000", kind: "voucher", weight: 1022, fill: "#FFC629", text: "#C2410C" },
+    { code: "BINHNUOC", name: "Bình nước",        short: ["BÌNH", "NƯỚC"],    icon: "ic-bottle",   kind: "gift", weight: 200, fill: "#F27321", text: "#FFFFFF" },
+    { code: "TUI",      name: "Túi",              short: ["", "TÚI"],         icon: "ic-bag",      kind: "gift", weight: 200, fill: "#D9461A", text: "#FFFFFF" },
   ];
   const AREAS = ["Tân Bình", "Quận 4", "Quận 6", "Khác"]; // "Khác" → người chơi tự nhập khu vực
   const FIELDS = ["name", "phone", "area", "areaOther", "consent"];
   /** Khu vực để hiển thị: chọn "Khác" thì hiện nội dung tự nhập. */
   const areaLabel = (rec) => (rec.area === "Khác" && rec.area_other ? rec.area_other : rec.area || "");
   const SLICE = 360 / PRIZES.length;
-  const STORE_KEY = "vq_result_v1";
+  const STORE_KEY = "vq2_result_v1";
   const SOUND_KEY = "vq_sound";
   const DEMO = !API_BASE;
 
@@ -81,8 +83,8 @@
 
   // ----- Demo: mô phỏng Worker trên máy (localStorage) -----
   const demo = {
-    db() { return store.get("vq_demo_db") || { spins: {}, stock: { AOMUA: 3, MUBH: 3 } }; },
-    save(db) { store.set("vq_demo_db", db); },
+    db() { return store.get("vq2_demo_db") || { spins: {}, stock: { MOCKHOA: 3, NON: 3, BINHNUOC: 3, TUI: 3 } }; },
+    save(db) { store.set("vq2_demo_db", db); },
     pick(list) {
       const total = list.reduce((s, p) => s + p.weight, 0);
       const buf = new Uint32Array(1);
@@ -95,7 +97,7 @@
       const a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
       const buf = new Uint32Array(6);
       crypto.getRandomValues(buf);
-      return "VQ-" + [...buf].map((n) => a[n % a.length]).join("");
+      return "QT-" + [...buf].map((n) => a[n % a.length]).join("");
     },
     now() {
       return new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(0, 19).replace("T", " ");
@@ -202,7 +204,7 @@
     el("circle", { cx: C, cy: C, r: 198, fill: `url(#${idPrefix}-rim)` }, svg);
     el("circle", { cx: C, cy: C, r: 172, fill: "#FFF5D7" }, svg);
 
-    // Rotor: 5 ô bằng nhau
+    // Rotor: 7 ô bằng nhau
     const rotor = el("g", { class: "wheel-rotor" }, svg);
     const R = 168;
     PRIZES.forEach((p, i) => {

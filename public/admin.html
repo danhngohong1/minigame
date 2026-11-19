@@ -95,14 +95,24 @@
         <form id="stock-form">
           <div class="stock-grid">
             <div class="stock-item">
-              <label for="s-AOMUA">Áo mưa – tổng số lượng</label>
-              <input id="s-AOMUA" type="number" inputmode="numeric" min="0" step="1">
-              <div class="stock-meta" id="m-AOMUA"></div>
+              <label for="s-MOCKHOA">Móc khoá – tổng số lượng</label>
+              <input id="s-MOCKHOA" type="number" inputmode="numeric" min="0" step="1">
+              <div class="stock-meta" id="m-MOCKHOA"></div>
             </div>
             <div class="stock-item">
-              <label for="s-MUBH">Mũ bảo hiểm – tổng số lượng</label>
-              <input id="s-MUBH" type="number" inputmode="numeric" min="0" step="1">
-              <div class="stock-meta" id="m-MUBH"></div>
+              <label for="s-NON">Nón – tổng số lượng</label>
+              <input id="s-NON" type="number" inputmode="numeric" min="0" step="1">
+              <div class="stock-meta" id="m-NON"></div>
+            </div>
+            <div class="stock-item">
+              <label for="s-BINHNUOC">Bình nước – tổng số lượng</label>
+              <input id="s-BINHNUOC" type="number" inputmode="numeric" min="0" step="1">
+              <div class="stock-meta" id="m-BINHNUOC"></div>
+            </div>
+            <div class="stock-item">
+              <label for="s-TUI">Túi – tổng số lượng</label>
+              <input id="s-TUI" type="number" inputmode="numeric" min="0" step="1">
+              <div class="stock-meta" id="m-TUI"></div>
             </div>
           </div>
           <div style="margin-top:var(--space-md)">
@@ -157,12 +167,15 @@
 
     const PRIZES = [
       { code: "V150", name: "Voucher 150.000đ", gift: false },
-      { code: "AOMUA", name: "Áo mưa", gift: true },
+      { code: "MOCKHOA", name: "Móc khoá", gift: true },
       { code: "V200", name: "Voucher 200.000đ", gift: false },
-      { code: "MUBH", name: "Mũ bảo hiểm", gift: true },
+      { code: "NON", name: "Nón", gift: true },
       { code: "V300", name: "Voucher 300.000đ", gift: false },
+      { code: "BINHNUOC", name: "Bình nước", gift: true },
+      { code: "TUI", name: "Túi", gift: true },
     ];
-    const ORDER = ["V150", "V200", "V300", "AOMUA", "MUBH"]; // thứ tự cột hiển thị
+    const GIFT_CODES = PRIZES.filter((p) => p.gift).map((p) => p.code);
+    const ORDER = ["V150", "V200", "V300", ...GIFT_CODES]; // thứ tự cột hiển thị
     const AREAS = ["Tân Bình", "Quận 4", "Quận 6", "Khác"]; // "Khác": danh sách hiện thêm nội dung tự nhập
     const $ = (s) => document.querySelector(s);
     const pname = (c) => (PRIZES.find((p) => p.code === c) || { name: c }).name;
@@ -171,7 +184,7 @@
     const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
     const base = () => API_BASE.replace(/\/+$/, "");
     let KEY = "";
-    try { KEY = sessionStorage.getItem("vq_admin_key") || ""; } catch {}
+    try { KEY = sessionStorage.getItem("vq2_admin_key") || ""; } catch {}
 
     async function get(qs) {
       const r = await fetch(base() + qs + (qs.includes("?") ? "&" : "?") + "key=" + encodeURIComponent(KEY));
@@ -194,7 +207,7 @@
       await load(true);
     });
     $("#btn-logout").addEventListener("click", () => {
-      KEY = ""; try { sessionStorage.removeItem("vq_admin_key"); } catch {}
+      KEY = ""; try { sessionStorage.removeItem("vq2_admin_key"); } catch {}
       $("#app").hidden = true; $("#login").hidden = false; $("#key").value = "";
     });
     $("#btn-reload").addEventListener("click", () => load(false));
@@ -206,7 +219,7 @@
       }
       try {
         const [sum, list] = await Promise.all([get("/?action=summary"), get("/?action=list")]);
-        try { sessionStorage.setItem("vq_admin_key", KEY); } catch {}
+        try { sessionStorage.setItem("vq2_admin_key", KEY); } catch {}
         $("#login").hidden = true; $("#app").hidden = false;
         $("#btn-csv").href = base() + "/?action=export&key=" + encodeURIComponent(KEY);
         renderSummary(sum);
@@ -223,7 +236,7 @@
 
     // ----- Tồn kho -----
     function renderStock(stock) {
-      for (const code of ["AOMUA", "MUBH"]) {
+      for (const code of GIFT_CODES) {
         const s = stock[code] || { total: 0, used: 0, remaining: 0 };
         $("#s-" + code).value = s.total;
         $("#s-" + code).min = s.used;
@@ -235,7 +248,7 @@
     $("#stock-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const body = { key: KEY };
-      for (const code of ["AOMUA", "MUBH"]) {
+      for (const code of GIFT_CODES) {
         const v = $("#s-" + code).value.trim();
         if (v === "") continue;
         const n = Number(v);
@@ -268,8 +281,7 @@
       $("#tiles").innerHTML =
         tile("Tổng lượt chơi", num(s.total)) +
         tile("Voucher giấy đã phát", num(vouchers), `150k: ${num(count("V150"))} · 200k: ${num(count("V200"))} · 300k: ${num(count("V300"))}`) +
-        tile("Áo mưa đã phát", num(count("AOMUA")), "Còn lại: " + num(s.stock.AOMUA.remaining)) +
-        tile("Mũ bảo hiểm đã phát", num(count("MUBH")), "Còn lại: " + num(s.stock.MUBH.remaining));
+        GIFT_CODES.map((c) => tile(pname(c) + " đã phát", num(count(c)), "Còn lại: " + num((s.stock[c] || {}).remaining))).join("");
 
       const head = `<thead><tr><th>Khu vực</th>${ORDER.map((c) => `<th class="num">${esc(pname(c))}</th>`).join("")}<th class="num">Tổng</th></tr></thead>`;
       const rows = s.areas.map((a) => `<tr><td>${esc(a.area)}</td>${ORDER.map((c) => `<td class="num">${num(a.counts[c])}</td>`).join("")}<td class="num"><b>${num(a.total)}</b></td></tr>`).join("");
@@ -282,7 +294,7 @@
 
       $("#tbl-day").innerHTML = `<thead><tr><th>Ngày</th>${ORDER.map((c) => `<th class="num">${esc(pname(c))}</th>`).join("")}<th class="num">Tổng</th></tr></thead><tbody>` +
         (s.days.length ? s.days.map((d) => `<tr><td>${esc(d.day.split("-").reverse().join("/"))}</td>${ORDER.map((c) => `<td class="num">${num(d.counts[c])}</td>`).join("")}<td class="num"><b>${num(d.total)}</b></td></tr>`).join("")
-          : `<tr><td colspan="7" class="empty">Chưa có lượt chơi</td></tr>`) + "</tbody>";
+          : `<tr><td colspan="${ORDER.length + 2}" class="empty">Chưa có lượt chơi</td></tr>`) + "</tbody>";
     }
 
     // ----- Danh sách -----
@@ -295,7 +307,7 @@
       ROWS = rows;
       $("#tbl-list tbody").innerHTML = rows.map((r, i) => {
         const swapped = r.rolled_code && r.rolled_code !== r.prize_code ? ` <span class="muted">(quay ra ${esc(pname(r.rolled_code))})</span>` : "";
-        const gift = r.prize_code === "AOMUA" || r.prize_code === "MUBH";
+        const gift = GIFT_CODES.includes(r.prize_code);
         return `<tr data-i="${i}"><td>${esc(r.created_at)}</td><td>${esc(r.name)}</td><td>${esc(r.phone)}</td><td>${esc(r.area)}${r.area === "Khác" && r.area_other ? ": " + esc(r.area_other) : ""}</td>` +
           `<td><span class="pill${gift ? " gift" : ""}">${esc(r.prize_name)}</span>${swapped}</td><td><b>${esc(r.claim_code)}</b></td><td>${esc(r.src)}</td></tr>`;
       }).join("") || `<tr><td colspan="7" class="empty">Chưa có lượt chơi</td></tr>`;

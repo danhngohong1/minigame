@@ -1,33 +1,38 @@
-# Vòng quay may mắn – FPT Telecom
+# Vòng quay may mắn – bản 2 (quà tặng hiện vật)
 
-Minigame quét QR → nhập thông tin → quay vòng quay 5 ô quà. Chạy trên Cloudflare Workers, dữ liệu lưu ở D1.
+Clone y hệt game ở nhánh `main` (Worker `minigame`), chỉ khác bộ quà. Nhánh này deploy lên Worker `minigames`:
 
-- Game: https://minigame.danhngohong1.workers.dev/
-- Quản trị: https://minigame.danhngohong1.workers.dev/admin (nhập `ADMIN_KEY`)
+- Game: https://minigames.danhngohong1.workers.dev/
+- Quản trị: https://minigames.danhngohong1.workers.dev/admin (nhập `ADMIN_KEY`)
 
-## Cấu trúc
+## Bộ quà (7 ô)
 
-| Thư mục / file | Nội dung |
+| Quà | Tỉ lệ |
 |---|---|
-| `public/` | Giao diện: `index.html` (game), `admin.html` (quản trị), `style.css`, `game.js`, `token.css`, `assets/` |
-| `worker/worker.js` | API dưới `/api` (check, spin, tồn kho, thống kê, CSV). Tự tạo bảng D1 ở lần chạy đầu |
-| `worker/schema.sql` | Cấu trúc bảng `spins`, `stock` (tham khảo) |
-| `wrangler.jsonc` | Cấu hình deploy: Worker `minigame`, D1 `vong-quay` |
+| Voucher 150.000đ | 61,34% |
+| Voucher 200.000đ | 20,44% |
+| Voucher 300.000đ | 10,22% |
+| Móc khoá | 2% |
+| Nón | 2% |
+| Bình nước | 2% |
+| Túi | 2% |
 
-## Deploy
+3 voucher chia 92% theo đúng tỉ lệ 6 : 2 : 1 của game gốc. Quà hiện vật hết hàng (hoặc chưa nhập số lượng trên trang quản trị) → tự đổi sang voucher.
 
-Mỗi lần push lên nhánh `main`, Cloudflare Workers Builds tự chạy `npx wrangler deploy`.
+Sửa tỉ lệ: mảng `PRIZES` trong `worker/worker.js` (thứ tự phải khớp `PRIZES` trong `public/game.js`).
 
-Cấu hình một lần trên dashboard (Workers & Pages → minigame → Settings → Variables and Secrets):
+## Dữ liệu
 
-- `ADMIN_KEY` (Secret): mật khẩu trang quản trị.
-- `SHEET_WEBHOOK` (tuỳ chọn): URL Apps Script để chép mỗi lượt quay sang Google Sheet.
+Dùng chung D1 `vong-quay` với game gốc nhưng bảng riêng `spins_qt` / `stock_qt` (tự tạo ở lần chạy đầu), nên:
+- Thống kê, CSV, tồn kho tách biệt hoàn toàn với game gốc.
+- Một SĐT đã chơi game gốc vẫn chơi được game này (mỗi game 1 lần).
+- Mã nhận quà bắt đầu bằng `QT-` (game gốc là `VQ-`).
 
-## Sửa nhanh
+## Cấu hình deploy (một lần trên Cloudflare)
 
-- Tỉ lệ quà: mảng `PRIZES` trong `worker/worker.js` (thứ tự phải khớp `PRIZES` trong `public/game.js`).
-- Thời gian chương trình: `PROGRAM_START` / `PROGRAM_END` trong `worker/worker.js`.
-- Số lượng áo mưa / mũ bảo hiểm: nhập trên trang quản trị.
-- Link QR theo điểm đặt: thêm `?src=tanbinh`, `?src=quan4`, … để thống kê nguồn.
+Workers & Pages → **minigames** → Settings → Build:
+- Git repository: `danhngohong1/minigame`
+- **Branch: `minigames`** (Root directory để trống) – push lên nhánh này mới deploy, không đụng game gốc ở `main`
+- Deploy command: `npx wrangler deploy`
 
-Game cũ "Tinh Hà FPT" vẫn còn trong lịch sử git (commit `47aea74`).
+Variables and Secrets của Worker `minigames`: `ADMIN_KEY` (Secret), `SHEET_WEBHOOK` (tuỳ chọn, nên dùng Sheet riêng).

@@ -2,7 +2,7 @@
 // - public/  : giao diện game (index.html) + trang quản trị (admin.html)
 // - worker/  : API dưới /api, lưu dữ liệu vào D1 "vong-quay"
 {
-  "name": "minigames",
+  "name": "minigame",
   "main": "worker/worker.js",
   "compatibility_date": "2026-11-10",
   "assets": {

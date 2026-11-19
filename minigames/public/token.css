@@ -1,0 +1,197 @@
+/* =========================================================================
+   token.css – Design tokens minigame "Vòng quay may mắn" – FPT Telecom
+   Nguồn: DESIGN.md. Đổi giá trị ở đây, không viết cứng màu trong component.
+
+   Font (đặt trong <head> trước file này):
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
+   ========================================================================= */
+
+:root {
+  /* ---------- Màu: cam FPT ---------- */
+  --orange-300: #FFB27A;
+  --orange-400: #F8981D;
+  --orange-500: #F58220;
+  --orange-600: #F27321;
+  --orange-700: #E8521E;
+  --orange-800: #C2410C;
+  --orange-900: #7A2E05;
+
+  /* ---------- Màu: vàng vòng quay & voucher ---------- */
+  --yellow-200: #FFF1A8;
+  --yellow-300: #FFE042;
+  --yellow-400: #FFC629;
+  --amber-500:  #FBB117;
+
+  /* ---------- Màu: kem & trắng ---------- */
+  --cream-50:  #FFFBEC;
+  --cream-100: #FFF5D7;
+  --cream-200: #FFE9B8;
+  --white:     #FFFFFF;
+
+  /* ---------- Màu logo FPT (chỉ cho logo) ---------- */
+  --fpt-blue:   #1B5BAE;
+  --fpt-green:  #4CB848;
+  --fpt-orange: #F36F21;
+
+  /* ---------- Chữ ---------- */
+  --ink:       #3D1A02;
+  --body:      #5C2D0A;
+  --muted:     #8A5A35;
+  --on-orange: #FFFFFF;
+  --on-yellow: #C2410C;
+
+  /* ---------- Trạng thái ---------- */
+  --success:    #2E9E44;
+  --error:      #D92D20;
+  --error-bg:   #FFF1EF;
+  --focus-ring: #1B5BAE;
+  --hairline:   #F6D7B5;
+  --overlay:    rgba(61, 26, 2, 0.6);
+
+  /* ---------- Gradient ---------- */
+  --grad-bg-page:   linear-gradient(180deg, var(--orange-400) 0%, var(--orange-500) 45%, var(--orange-600) 100%);
+  --grad-wheel-rim: linear-gradient(180deg, var(--orange-400) 0%, var(--orange-700) 100%);
+  --grad-go:        radial-gradient(circle at 35% 30%, #FF9A4D 0%, var(--orange-600) 55%, var(--orange-700) 100%);
+  --grad-voucher:   linear-gradient(180deg, var(--yellow-300) 0%, var(--yellow-400) 55%, var(--amber-500) 100%);
+  --grad-pointer:   linear-gradient(180deg, var(--cream-200) 0%, var(--yellow-400) 100%);
+  --grad-podium:    linear-gradient(180deg, var(--cream-50) 0%, var(--cream-200) 100%);
+  --grad-glow:      radial-gradient(circle, rgba(255, 241, 168, 0.9) 0%, rgba(255, 224, 66, 0) 70%);
+
+  /* ---------- Font ---------- */
+  --font-display: 'Baloo 2', 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-text:    'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* ---------- Cỡ chữ (mobile 375px) ---------- */
+  --fs-display-xl: 44px;
+  --fs-display-lg: 32px;
+  --fs-display-md: 24px;
+  --fs-title:      20px;
+  --fs-prize:      22px;
+  --fs-button:     18px;
+  --fs-label:      15px;
+  --fs-body:       16px;   /* >=16px để iOS không tự zoom khi focus input */
+  --fs-caption:    13px;
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semi:    600;
+  --fw-bold:    700;
+  --fw-black:   800;
+
+  --lh-tight:  1.0;
+  --lh-snug:   1.2;
+  --lh-normal: 1.5;
+
+  /* ---------- Bo góc ---------- */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-pill: 9999px;
+  --radius-full: 50%;
+
+  /* ---------- Khoảng cách ---------- */
+  --space-xxs: 4px;
+  --space-xs:  8px;
+  --space-sm:  12px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-xxl: 48px;
+
+  /* ---------- Bóng (luôn ấm, không dùng đen) ---------- */
+  --shadow-card:           0 8px 24px rgba(122, 46, 5, 0.18);
+  --shadow-button:         0 4px 0 var(--orange-800), 0 8px 16px rgba(122, 46, 5, 0.25);
+  --shadow-button-pressed: 0 1px 0 var(--orange-800), 0 2px 6px rgba(122, 46, 5, 0.25);
+  --shadow-wheel:          0 12px 32px rgba(122, 46, 5, 0.35);
+  --shadow-bulb:           0 0 10px 3px rgba(255, 241, 168, 0.95);
+  --shadow-text-title:     0 3px 0 rgba(194, 65, 12, 0.35);
+  --ring-focus:            0 0 0 4px rgba(245, 130, 32, 0.25);
+
+  /* ---------- Bố cục ---------- */
+  --container-max: 480px;
+  --gutter:        16px;
+  --header-h:      52px;
+  --tap-min:       48px;
+  --input-h:       52px;
+  --button-h:      56px;
+
+  /* ---------- Vòng quay ---------- */
+  --wheel-size:      min(86vw, 380px);
+  --wheel-rim-w:     18px;
+  --wheel-slice-a:   var(--yellow-300);
+  --wheel-slice-b:   var(--amber-500);
+  --wheel-slice-c:   var(--yellow-400);   /* ô thứ 5, tránh 2 ô liền nhau trùng màu */
+  --wheel-bulb-size: 12px;
+  --go-size:         72px;
+
+  /* ---------- Chuyển động ---------- */
+  --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spin:     cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  --dur-fast:      150ms;
+  --dur-base:      250ms;
+  --dur-modal:     400ms;
+  --dur-spin:      5s;
+  --dur-bulb:      0.8s;
+  --dur-float:     6s;
+
+  /* ---------- Lớp ---------- */
+  --z-decor:   0;
+  --z-content: 1;
+  --z-sticky:  10;
+  --z-modal:   100;
+}
+
+/* Màn nhỏ */
+@media (max-width: 359px) {
+  :root {
+    --fs-display-xl: 36px;
+    --fs-display-lg: 28px;
+    --fs-prize:      18px;
+    --wheel-size:    90vw;
+  }
+}
+
+/* Giảm chuyển động */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-spin:  2.5s;
+    --dur-bulb:  0s;
+    --dur-float: 0s;
+    --dur-modal: 0ms;
+  }
+}
+
+/* =========================================================================
+   Nền tảng dùng chung (tuỳ chọn – xoá nếu chỉ muốn lấy biến)
+   ========================================================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  min-height: 100dvh;
+  background: var(--orange-500) var(--grad-bg-page) fixed;
+  color: var(--on-orange);
+  font-family: var(--font-text);
+  font-size: var(--fs-body);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom));
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}

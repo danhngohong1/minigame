@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F58220">
+  <title>Vòng quay may mắn – FPT Telecom</title>
+  <meta name="description" content="Vòng quay may mắn – Quà tặng ngập tràn cùng FPT Telecom">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
+  <link rel="stylesheet" href="token.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Icon dùng chung (hình vẽ tạm – thay bằng ảnh thật sau) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="ic-voucher" viewBox="0 0 64 40">
+        <path d="M6 2h52a4 4 0 0 1 4 4v8a6 6 0 0 0 0 12v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-8a6 6 0 0 0 0-12V6a4 4 0 0 1 4-4z" fill="#FFF" stroke="#C2410C" stroke-width="3"/>
+        <path d="M44 6v28" stroke="#C2410C" stroke-width="2.5" stroke-dasharray="3 3"/>
+        <text x="23" y="26" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="15" fill="#C2410C">VC</text>
+        <circle cx="54" cy="20" r="4" fill="#F58220"/>
+      </symbol>
+      <symbol id="ic-raincoat" viewBox="0 0 64 64">
+        <path d="M32 4c-9 0-15 7-15 15v4L7 54c-1 3 1 6 4 6h42c3 0 5-3 4-6L47 23v-4c0-8-6-15-15-15z" fill="#FFF" stroke="#C2410C" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M23 20c2-6 6-9 9-9s7 3 9 9c-3 2-6 3-9 3s-6-1-9-3z" fill="#FFE9B8" stroke="#C2410C" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M32 26v32" stroke="#C2410C" stroke-width="2.5"/>
+        <path d="M21 34h-5M48 34h-5" stroke="#F58220" stroke-width="3" stroke-linecap="round"/>
+        <rect x="35" y="30" width="9" height="5" rx="1.5" fill="#F58220"/>
+      </symbol>
+      <symbol id="ic-helmet" viewBox="0 0 64 64">
+        <path d="M8 40c0-15 10-27 24-27s24 12 24 27v4H8z" fill="#F58220" stroke="#7A2E05" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M20 18c4-3 8-5 12-5s8 2 12 5" fill="none" stroke="#FFE042" stroke-width="3" stroke-linecap="round"/>
+        <path d="M32 13v31" stroke="#FFE042" stroke-width="3"/>
+        <path d="M4 44h56a3 3 0 0 1 0 6H4a3 3 0 0 1 0-6z" fill="#3D1A02"/>
+        <path d="M16 50c0 6 4 9 9 9" fill="none" stroke="#3D1A02" stroke-width="2.5" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="ic-keychain" viewBox="0 0 64 64">
+        <circle cx="20" cy="18" r="12" fill="none" stroke="#C2410C" stroke-width="4"/>
+        <path d="M28 26l6 6" stroke="#C2410C" stroke-width="4" stroke-linecap="round"/>
+        <rect x="30" y="30" width="26" height="26" rx="7" fill="#FFF" stroke="#C2410C" stroke-width="3" transform="rotate(8 43 43)"/>
+        <circle cx="43" cy="43" r="6" fill="#F58220"/>
+        <circle cx="35" cy="35" r="2.2" fill="#C2410C"/>
+      </symbol>
+      <symbol id="ic-cap" viewBox="0 0 64 64">
+        <path d="M10 40c0-14 9-24 22-24s22 10 22 24z" fill="#F58220" stroke="#7A2E05" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M32 16v24M21 19c-3 6-4 13-4 21M43 19c3 6 4 13 4 21" stroke="#FFE042" stroke-width="2.5" fill="none"/>
+        <circle cx="32" cy="15" r="3" fill="#7A2E05"/>
+        <path d="M8 40h40c8 0 12 3 12 6 0 2-2 3-5 3H10a4 4 0 0 1-4-4c0-3 1-5 2-5z" fill="#3D1A02"/>
+      </symbol>
+      <symbol id="ic-bottle" viewBox="0 0 64 64">
+        <rect x="25" y="3" width="14" height="7" rx="2" fill="#3D1A02"/>
+        <path d="M24 10h16v6c4 3 6 7 6 12v28a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V28c0-5 2-9 6-12z" fill="#FFF" stroke="#C2410C" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M20 32h24v16H20z" fill="#F58220"/>
+        <path d="M27 38c2-3 4-3 5 0s3 3 5 0" stroke="#FFE042" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="ic-bag" viewBox="0 0 64 64">
+        <path d="M22 22v-6a10 10 0 0 1 20 0v6" fill="none" stroke="#7A2E05" stroke-width="4" stroke-linecap="round"/>
+        <path d="M10 22h44l-3 34a5 5 0 0 1-5 4H18a5 5 0 0 1-5-4z" fill="#F58220" stroke="#7A2E05" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M14 32h36" stroke="#FFE042" stroke-width="3"/>
+        <circle cx="22" cy="27" r="2.5" fill="#3D1A02"/><circle cx="42" cy="27" r="2.5" fill="#3D1A02"/>
+      </symbol>
+      <symbol id="ic-gift" viewBox="0 0 64 64">
+        <rect x="8" y="26" width="48" height="34" rx="4" fill="#F27321"/>
+        <rect x="4" y="18" width="56" height="12" rx="3" fill="#F8981D"/>
+        <rect x="28" y="18" width="8" height="42" fill="#FFE042"/>
+        <path d="M32 18c-4-10-16-12-16-4 0 5 9 5 16 4zM32 18c4-10 16-12 16-4 0 5-9 5-16 4z" fill="none" stroke="#FFE042" stroke-width="4" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="ic-phone" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="12" fill="currentColor"/>
+        <path d="M9.2 6.5l1.3 2.6c.2.4.1.8-.2 1.1l-.9.8a8 8 0 0 0 3.6 3.6l.8-.9c.3-.3.7-.4 1.1-.2l2.6 1.3c.4.2.6.7.4 1.1l-.5 1.4c-.2.6-.8.9-1.4.8A10.5 10.5 0 0 1 6 8.4c-.1-.6.2-1.2.8-1.4l1.4-.5c.4-.2.9 0 1 .4z" fill="#fff"/>
+      </symbol>
+      <symbol id="ic-sound-on" viewBox="0 0 24 24">
+        <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/>
+        <path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="ic-sound-off" viewBox="0 0 24 24">
+        <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/>
+        <path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Trang trí nền -->
+  <div class="decor" aria-hidden="true">
+    <svg class="decor-gift g1"><use href="#ic-gift"/></svg>
+    <svg class="decor-gift g2"><use href="#ic-gift"/></svg>
+    <svg class="decor-gift g3"><use href="#ic-gift"/></svg>
+    <svg class="decor-gift g4"><use href="#ic-gift"/></svg>
+  </div>
+
+  <div id="demo-banner" class="demo-banner" hidden>CHẾ ĐỘ DEMO – kết quả random trên máy, không lưu lên server</div>
+
+  <header class="brand-header">
+    <div class="brand">
+      <img src="assets/logo-ftel30.png" width="184" height="40" alt="FPT Telecom – 30 năm Khí phách tiên phong">
+    </div>
+    <button type="button" id="btn-sound" class="sound-toggle" aria-pressed="true" aria-label="Tắt âm thanh">
+      <svg class="i-on"><use href="#ic-sound-on"/></svg>
+      <svg class="i-off"><use href="#ic-sound-off"/></svg>
+    </button>
+  </header>
+
+  <main class="container">
+    <!-- ========== MÀN 1: GIỚI THIỆU ========== -->
+    <section id="screen-intro" class="screen" data-screen="intro">
+      <h1 class="hero-title">Vòng quay<br>may mắn</h1>
+      <p class="tagline-pill">Quà tặng ngập tràn</p>
+
+      <div class="wheel-stage wheel-stage--preview">
+        <div class="wheel-glow" aria-hidden="true"></div>
+        <div class="wheel" id="wheel-preview" role="img" aria-label="Vòng quay 7 ô quà: Voucher 150.000đ, Móc khoá, Voucher 200.000đ, Nón, Voucher 300.000đ, Bình nước, Túi"></div>
+      </div>
+
+      <h2 class="section-title">Nhận ngay quà tặng</h2>
+      <div class="voucher-row">
+        <div class="voucher-ticket"><span>Voucher</span><b>300.000<sup>đ</sup></b></div>
+        <div class="voucher-ticket"><span>Voucher</span><b>150.000<sup>đ</sup></b></div>
+        <div class="voucher-ticket"><span>Voucher</span><b>200.000<sup>đ</sup></b></div>
+      </div>
+      <div class="gift-podium">
+        <figure><svg><use href="#ic-keychain"/></svg><figcaption>Móc khoá</figcaption></figure>
+        <figure><svg><use href="#ic-cap"/></svg><figcaption>Nón</figcaption></figure>
+        <figure><svg><use href="#ic-bottle"/></svg><figcaption>Bình nước</figcaption></figure>
+        <figure><svg><use href="#ic-bag"/></svg><figcaption>Túi</figcaption></figure>
+      </div>
+
+      <div class="rules">
+        <h3>Thể lệ</h3>
+        <ul>
+          <li>Mỗi số điện thoại được quay <b>1 lần</b> trong suốt chương trình.</li>
+          <li>100% người chơi nhận quà.</li>
+          <li>Quà được phát <b>ngay tại chỗ</b>: đưa màn hình kết quả cho nhân viên.</li>
+        </ul>
+      </div>
+
+      <div class="sticky-cta">
+        <button type="button" class="btn btn-primary" id="btn-join">Tham gia ngay</button>
+      </div>
+    </section>
+
+    <!-- ========== MÀN 2: NHẬP THÔNG TIN ========== -->
+    <section id="screen-form" class="screen" data-screen="form" hidden>
+      <h1 class="hero-title hero-title--sm">Thông tin<br>người chơi</h1>
+      <form id="player-form" class="form-card" novalidate>
+        <div class="field">
+          <label for="f-name">Họ và tên</label>
+          <input id="f-name" name="name" type="text" autocomplete="name" maxlength="50" placeholder="Nguyễn Văn A" aria-describedby="err-name" required>
+          <p class="field-error" id="err-name" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="f-phone">Số điện thoại</label>
+          <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="09xx xxx xxx" aria-describedby="err-phone" required>
+          <p class="field-error" id="err-phone" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="f-area">Khu vực</label>
+          <div class="select-wrap">
+            <select id="f-area" name="area" aria-describedby="err-area" required>
+              <option value="" selected disabled>-- Chọn khu vực --</option>
+              <option value="Tân Bình">Tân Bình</option>
+              <option value="Quận 4">Quận 4</option>
+              <option value="Quận 6">Quận 6</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+          <p class="field-error" id="err-area" role="alert"></p>
+        </div>
+        <div class="field" id="field-area-other" hidden>
+          <label for="f-area-other">Nhập khu vực của bạn</label>
+          <input id="f-area-other" name="areaOther" type="text" autocomplete="address-level2" maxlength="50" placeholder="VD: Quận 7, Bình Thạnh…" aria-describedby="err-areaOther">
+          <p class="field-error" id="err-areaOther" role="alert"></p>
+        </div>
+        <div class="field">
+          <label class="consent">
+            <input type="checkbox" id="f-consent" name="consent">
+            <span>Tôi đồng ý cho chương trình lưu thông tin để liên hệ trao quà</span>
+          </label>
+          <p class="field-error" id="err-consent" role="alert"></p>
+        </div>
+
+        <p class="form-alert" id="form-alert" role="alert" hidden></p>
+
+        <button type="submit" class="btn btn-primary btn-block" id="btn-start" disabled>Bắt đầu quay</button>
+        <button type="button" class="btn btn-link" id="btn-back-intro">← Quay lại</button>
+      </form>
+    </section>
+
+    <!-- ========== MÀN 3: VÒNG QUAY ========== -->
+    <section id="screen-wheel" class="screen" data-screen="wheel" hidden>
+      <h1 class="hero-title hero-title--sm">Vòng quay<br>may mắn</h1>
+      <p class="tagline-pill" id="wheel-hint">Bấm QUAY để thử vận may!</p>
+
+      <div class="wheel-stage">
+        <div class="wheel-glow" aria-hidden="true"></div>
+        <div class="wheel" id="wheel-play" role="img" aria-label="Vòng quay may mắn"></div>
+        <button type="button" class="go-button" id="btn-spin" aria-label="Quay">QUAY</button>
+      </div>
+
+      <div class="spin-error" id="spin-error" role="alert" hidden>
+        <p>Mất kết nối, vui lòng thử lại</p>
+        <button type="button" class="btn btn-secondary" id="btn-retry">Thử lại</button>
+      </div>
+    </section>
+
+    <footer class="footer-bar">
+      <a href="tel:19006600" class="hotline"><svg><use href="#ic-phone"/></svg>1900 6600</a>
+      <a href="https://fpt.vn" target="_blank" rel="noopener" class="site">fpt.vn</a>
+    </footer>
+  </main>
+
+  <!-- ========== POPUP KẾT QUẢ ========== -->
+  <div class="modal" id="result-modal" hidden>
+    <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+    <div class="result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title">
+      <h2 class="result-title" id="result-title">Chúc mừng!</h2>
+      <p class="result-sub" id="result-sub">Bạn đã trúng</p>
+      <div class="result-prize" id="result-prize"></div>
+      <p class="result-prize-name" id="result-prize-name"></p>
+
+      <dl class="result-info">
+        <div id="row-name"><dt>Họ tên</dt><dd id="r-name"></dd></div>
+        <div><dt>Số điện thoại</dt><dd id="r-phone"></dd></div>
+        <div><dt>Khu vực</dt><dd id="r-area"></dd></div>
+        <div><dt>Thời gian</dt><dd id="r-time"></dd></div>
+      </dl>
+
+      <div class="claim-code">
+        <span>Mã nhận quà</span>
+        <b id="r-code"></b>
+      </div>
+      <p class="result-guide">Vui lòng đưa màn hình này cho nhân viên để nhận quà ngay tại chỗ.</p>
+
+      <button type="button" class="btn btn-primary btn-block" id="btn-save">Lưu ảnh kết quả</button>
+      <button type="button" class="btn btn-link" id="btn-close-dup" hidden>Đóng</button>
+    </div>
+  </div>
+
+  <!-- Xem ảnh đã lưu (dự phòng khi trình duyệt không tự tải) -->
+  <div class="modal" id="image-modal" hidden>
+    <div class="result-modal image-modal">
+      <p class="result-guide">Nếu ảnh chưa tự tải về, <b>nhấn giữ ảnh</b> để lưu.</p>
+      <img id="saved-image" alt="Ảnh kết quả vòng quay">
+      <button type="button" class="btn btn-secondary btn-block" id="btn-close-image">Đóng</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
